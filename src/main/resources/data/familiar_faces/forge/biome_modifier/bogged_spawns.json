@@ -1,0 +1,14 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": [
+    "minecraft:swamp",
+    "minecraft:mangrove_swamp"
+  ],
+  "spawners":
+  {
+    "type": "familiar_faces:bogged",
+    "weight": 30,
+    "minCount": 4,
+    "maxCount": 4
+  }
+}

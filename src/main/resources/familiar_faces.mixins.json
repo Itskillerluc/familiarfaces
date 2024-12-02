@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "io.github.itskilerluc.familiarfaces.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "familiarfaces.refmap.json",
+  "refmap": "familiar_faces.refmap.json",
   "mixins": [
   ],
   "client": [
