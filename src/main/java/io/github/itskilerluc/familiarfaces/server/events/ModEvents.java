@@ -2,6 +2,7 @@ package io.github.itskilerluc.familiarfaces.server.events;
 
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
 import io.github.itskilerluc.familiarfaces.server.entities.Bogged;
+import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
 import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.ItemRegistry;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -18,12 +19,17 @@ public class ModEvents {
     @SubscribeEvent
     public static void entityAttributeCreation(final EntityAttributeCreationEvent event) {
         event.put(EntityTypeRegistry.BOGGED.get(), Bogged.createAttributes().build());
+        event.put(EntityTypeRegistry.BREEZE.get(), Breeze.createAttributes().build());
     }
 
     @SubscribeEvent
     public static void registerItemsToTab(final BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(ItemRegistry.BOGGED_SPAWN_EGG);
+            event.accept(ItemRegistry.BREEZE_SPAWN_EGG);
+        }
+        if (event.getTabKey() == CreativeModeTabs.COMBAT) {
+            event.accept(ItemRegistry.WIND_CHARGE);
         }
     }
 

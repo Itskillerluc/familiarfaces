@@ -23,6 +23,7 @@ import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -64,7 +65,7 @@ public class LongJump extends Behavior<Breeze> {
     public static boolean canRun(ServerLevel level, Breeze breeze) {
         if (!breeze.onGround() && !breeze.isInWater()) {
             return false;
-        } else if (Swim.checkExtraStartConditions(breeze)) {
+        } else if (breeze.isInWater() && breeze.getFluidTypeHeight(Fluids.WATER.getFluidType()) > breeze.getFluidJumpThreshold() || breeze.isInLava() || breeze.isInFluidType((fluidType, height) -> breeze.canSwimInFluidType(fluidType) && height > breeze.getFluidJumpThreshold())) {
             return false;
         } else if (breeze.getBrain().checkMemory(MemoryModuleTypeRegistry.BREEZE_JUMP_TARGET.get(), MemoryStatus.VALUE_PRESENT)) {
             return true;
@@ -112,8 +113,8 @@ public class LongJump extends Behavior<Breeze> {
             entity.getBrain().setMemoryWithExpiry(MemoryModuleTypeRegistry.BREEZE_JUMP_INHALING.get(), Unit.INSTANCE, (long)INHALING_DURATION_TICKS);
         }
 
-        entity.setPose(Pose.INHALING);
-        level.playSound(null, entity, SoundEvents.BREEZE_CHARGE, SoundSource.HOSTILE, 1.0F, 1.0F);
+        entity.setExtraPose(ExtraPose.INHALING);
+        //todo level.playSound(null, entity, SoundEvents.BREEZE_CHARGE, SoundSource.HOSTILE, 1.0F, 1.0F);
         entity.getBrain()
                 .getMemory(MemoryModuleTypeRegistry.BREEZE_JUMP_TARGET.get())
                 .ifPresent(p_312818_ -> entity.lookAt(EntityAnchorArgument.Anchor.EYES, p_312818_.getCenter()));
@@ -139,13 +140,13 @@ public class LongJump extends Behavior<Breeze> {
                 owner.getBrain().setMemory(MemoryModuleTypeRegistry.BREEZE_LEAVING_WATER.get(), Unit.INSTANCE);
             }
 
-            owner.playSound(SoundEvents.BREEZE_JUMP, 1.0F, 1.0F);
+            //todo owner.playSound(SoundEvents.BREEZE_JUMP, 1.0F, 1.0F);
             owner.setPose(Pose.LONG_JUMPING);
             owner.setYRot(owner.yBodyRot);
             owner.setDiscardFriction(true);
             owner.setDeltaMovement(vec3);
         } else if (isFinishedJumping(owner)) {
-            owner.playSound(SoundEvents.BREEZE_LAND, 1.0F, 1.0F);
+            //todo owner.playSound(SoundEvents.BREEZE_LAND, 1.0F, 1.0F);
             owner.setPose(Pose.STANDING);
             owner.setDiscardFriction(false);
             boolean flag1 = owner.getBrain().hasMemoryValue(MemoryModuleType.HURT_BY);
@@ -155,8 +156,9 @@ public class LongJump extends Behavior<Breeze> {
     }
 
     protected void stop(ServerLevel level, Breeze entity, long gameTime) {
-        if (entity.getPose() == Pose.LONG_JUMPING || entity.getPose() == Pose.INHALING) {
+        if (entity.getPose() == Pose.LONG_JUMPING || entity.getExtraPose() == ExtraPose.INHALING) {
             entity.setPose(Pose.STANDING);
+            entity.setExtraPose(ExtraPose.NONE);
         }
 
         entity.getBrain().eraseMemory(MemoryModuleTypeRegistry.BREEZE_JUMP_TARGET.get());
@@ -165,7 +167,7 @@ public class LongJump extends Behavior<Breeze> {
     }
 
     private static boolean isFinishedInhaling(Breeze breeze) {
-        return breeze.getBrain().getMemory(MemoryModuleTypeRegistry.BREEZE_JUMP_INHALING.get()).isEmpty() && breeze.getPose() == Pose.INHALING;
+        return breeze.getBrain().getMemory(MemoryModuleTypeRegistry.BREEZE_JUMP_INHALING.get()).isEmpty() && breeze.getExtraPose() == ExtraPose.INHALING;
     }
 
     private static boolean isFinishedJumping(Breeze breeze) {

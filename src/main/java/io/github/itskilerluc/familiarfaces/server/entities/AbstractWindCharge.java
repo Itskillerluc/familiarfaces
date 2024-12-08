@@ -34,26 +34,39 @@ import java.util.Objects;
 import java.util.Optional;
 
 public abstract class AbstractWindCharge extends AbstractHurtingProjectile implements ItemSupplier {
-    public static final ExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(
+    public static final SimpleExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(
             true, false, Optional.empty(), Optional.of(HolderSet.direct(Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(Tags.Blocks.BLOCKS_WIND_CHARGE_EXPLOSIONS).stream().map(Holder::direct).toList()))
     );
+    public double accelerationPower = 0.1;
 
-    public AbstractWindCharge(EntityType<? extends AbstractWindCharge> entityType, Level level) {
+    protected AbstractWindCharge(EntityType<? extends AbstractHurtingProjectile> entityType, Level level) {
         super(entityType, level);
-        this.xPower = 0;
-        this.yPower = 0;
-        this.zPower = 0;
+        accelerationPower = 0.0;
     }
 
-    public AbstractWindCharge(EntityType<? extends AbstractWindCharge> pEntityType, double pX, double pY, double pZ, double pOffsetX, double pOffsetY, double pOffsetZ, Level pLevel) {
-        super(pEntityType, pX, pY, pZ, pOffsetX, pOffsetY, pOffsetZ, pLevel);
+    protected AbstractWindCharge(
+            EntityType<? extends AbstractHurtingProjectile> entityType, Level level, Entity owner, double x, double y, double z
+    ) {
+        this(entityType, level);
+        this.setPos(x, y, z);
+        this.accelerationPower = 0;
     }
 
-    public AbstractWindCharge(EntityType<? extends AbstractHurtingProjectile> pEntityType, LivingEntity pShooter, double pOffsetX, double pOffsetY, double pOffsetZ, Level pLevel) {
-        super(pEntityType, pShooter, pOffsetX, pOffsetY, pOffsetZ, pLevel);
-        this.xPower = 0;
-        this.yPower = 0;
-        this.zPower = 0;
+    public AbstractWindCharge(
+            EntityType<? extends AbstractHurtingProjectile> entityType, double x, double y, double z, Vec3 movement, Level level
+    ) {
+        this(entityType, level);
+        this.moveTo(x, y, z, this.getYRot(), this.getXRot());
+        this.reapplyPosition();
+        this.assignDirectionalMovement(movement, this.accelerationPower);
+        this.accelerationPower = 0.0;
+    }
+
+    public AbstractWindCharge(EntityType<? extends AbstractHurtingProjectile> entityType, LivingEntity owner, Vec3 movement, Level level) {
+        this(entityType, owner.getX(), owner.getY(), owner.getZ(), movement, level);
+        this.setOwner(owner);
+        this.setRot(owner.getYRot(), owner.getXRot());
+        this.accelerationPower = 0.0;
     }
 
     @Override
@@ -179,8 +192,10 @@ public abstract class AbstractWindCharge extends AbstractHurtingProjectile imple
                     f = this.getInertia();
                 }
 
-                this.setDeltaMovement(vec3.add(vec3.normalize().scale(this.accelerationPower)).scale((double)f));
+                this.setDeltaMovement(vec3.add(vec3.normalize().scale(this.accelerationPower)).scale(f));
                 ParticleOptions particleoptions = this.getTrailParticle();
+
+                //noinspection ConstantValue
                 if (particleoptions != null) {
                     this.level().addParticle(particleoptions, d0, d1 + 0.5, d2, 0.0, 0.0, 0.0);
                 }
@@ -239,5 +254,10 @@ public abstract class AbstractWindCharge extends AbstractHurtingProjectile imple
     @Override
     public boolean hurt(@NotNull DamageSource source, float amount) {
         return false;
+    }
+
+    private void assignDirectionalMovement(Vec3 movement, double accelerationPower) {
+        this.setDeltaMovement(movement.normalize().scale(accelerationPower));
+        this.hasImpulse = true;
     }
 }

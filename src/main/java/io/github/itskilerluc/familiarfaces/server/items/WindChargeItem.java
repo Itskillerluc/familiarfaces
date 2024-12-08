@@ -14,7 +14,6 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.Vec3;
 
 public class WindChargeItem extends Item {
@@ -44,7 +43,7 @@ public class WindChargeItem extends Item {
                 0.4F / (p_326306_.getRandom().nextFloat() * 0.4F + 0.8F)
         );
         ItemStack itemstack = player.getItemInHand(p_326470_);
-        player.getCooldowns().addCooldown(this, 10);
+        player.getCooldowns().addCooldown(this, COOLDOWN);
         player.awardStat(Stats.ITEM_USED.get(this));
         if (!player.getAbilities().instabuild) {
             itemstack.shrink(1);
@@ -55,9 +54,9 @@ public class WindChargeItem extends Item {
 
     public Projectile asProjectile(Level p_338589_, Position p_338670_, ItemStack p_338308_, Direction p_338206_) {
         RandomSource randomsource = p_338589_.getRandom();
-        double d0 = randomsource.triangle((double)p_338206_.getStepX(), 0.11485000000000001);
-        double d1 = randomsource.triangle((double)p_338206_.getStepY(), 0.11485000000000001);
-        double d2 = randomsource.triangle((double)p_338206_.getStepZ(), 0.11485000000000001);
+        double d0 = randomsource.triangle(p_338206_.getStepX(), 0.11485000000000001);
+        double d1 = randomsource.triangle(p_338206_.getStepY(), 0.11485000000000001);
+        double d2 = randomsource.triangle(p_338206_.getStepZ(), 0.11485000000000001);
         Vec3 vec3 = new Vec3(d0, d1, d2);
         WindCharge windcharge = new WindCharge(p_338589_, p_338670_.x(), p_338670_.y(), p_338670_.z(), vec3);
         windcharge.setDeltaMovement(vec3);

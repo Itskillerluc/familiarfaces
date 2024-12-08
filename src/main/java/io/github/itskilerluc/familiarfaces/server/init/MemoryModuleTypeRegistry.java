@@ -2,6 +2,7 @@ package io.github.itskilerluc.familiarfaces.server.init;
 
 import com.mojang.serialization.Codec;
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraftforge.registries.DeferredRegister;
@@ -25,8 +26,8 @@ public class MemoryModuleTypeRegistry {
             () -> new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE))));
     public static final RegistryObject<MemoryModuleType<Unit>> BREEZE_JUMP_INHALING = MEMORY_MODULE_TYPES.register("breeze_jump_inhaling",
             () -> new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE))));
-    public static final RegistryObject<MemoryModuleType<Unit>> BREEZE_JUMP_TARGET = MEMORY_MODULE_TYPES.register("breeze_jump_target",
-            () -> new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE))));
+    public static final RegistryObject<MemoryModuleType<BlockPos>> BREEZE_JUMP_TARGET = MEMORY_MODULE_TYPES.register("breeze_jump_target",
+            () -> new MemoryModuleType<>(Optional.of(BlockPos.CODEC)));
     public static final RegistryObject<MemoryModuleType<Unit>> BREEZE_LEAVING_WATER = MEMORY_MODULE_TYPES.register("breeze_leaving_water",
             () -> new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE))));
 }

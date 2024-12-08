@@ -3,6 +3,7 @@ package io.github.itskilerluc.familiarfaces.server.entities;
 import com.mojang.serialization.Dynamic;
 import io.github.itskilerluc.familiarfaces.server.entities.ai.BreezeAi;
 import io.github.itskilerluc.familiarfaces.server.entities.ai.ExtraPose;
+import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -317,7 +318,7 @@ public class Breeze extends Monster {
         if (source.is(DamageTypeTags.IS_PROJECTILE)) {
             var entity = source.getDirectEntity();
             if (entity instanceof Projectile projectile) {
-                if (projectile.getType() != EntityType.BREEZE_WIND_CHARGE && projectile.getType() != EntityType.WIND_CHARGE) {
+                if (projectile.getType() != EntityTypeRegistry.BREEZE_WIND_CHARGE.get() && projectile.getType() != EntityTypeRegistry.WIND_CHARGE.get()) {
                     // todo: level().playSound(null, this, SoundEvents.BREEZE_DEFLECT, this.getSoundSource(), 1.0F, 1.0F);
                     float f = 170.0F + random.nextFloat() * 20.0F;
                     projectile.setDeltaMovement(projectile.getDeltaMovement().scale(-0.5));
@@ -329,5 +330,10 @@ public class Breeze extends Monster {
             }
         }
         return super.hurt(source, p_21017_);
+    }
+
+    @Override
+    public float getEyeHeight(Pose pPose) {
+        return 1.3452F;
     }
 }

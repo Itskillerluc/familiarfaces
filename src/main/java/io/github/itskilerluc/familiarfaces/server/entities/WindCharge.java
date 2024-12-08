@@ -9,7 +9,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -27,17 +29,16 @@ public class WindCharge extends AbstractWindCharge {
     private static final float RADIUS = 1.2F;
     private int noDeflectTicks = 5;
 
-    public WindCharge(EntityType<? extends WindCharge> entityType, Level level) {
+    public WindCharge(EntityType<? extends AbstractWindCharge> entityType, Level level) {
         super(entityType, level);
     }
 
     public WindCharge(Player player, Level level, double x, double y, double z) {
-        super(EntityTypeRegistry.WIND_CHARGE.get(), player, x, y, z, level);
+        super(EntityTypeRegistry.WIND_CHARGE.get(), level, player, x, y, z);
     }
 
-    public WindCharge(Level level, double x, double y, double z, Vec3 movement, Player player) {
-        super(EntityTypeRegistry.WIND_CHARGE.get(), player, x, y, z, level);
-
+    public WindCharge(Level level, double x, double y, double z, Vec3 movement) {
+        super(EntityTypeRegistry.WIND_CHARGE.get(), x, y, z, movement, level);
     }
 
     @Override
@@ -66,12 +67,17 @@ public class WindCharge extends AbstractWindCharge {
                 pos.z(),
                 RADIUS,
                 false,
-                Level.ExplosionInteraction.MOB,
+                Level.ExplosionInteraction.NONE,
                 true,
                 ParticleTypes.EXPLOSION_EMITTER,
                 ParticleTypes.EXPLOSION,
                 //todo SoundEvents.WIND_CHARGE_BURST
                 SoundEvents.TNT_PRIMED
         );
+    }
+
+    @Override
+    protected float getEyeHeight(Pose pPose, EntityDimensions pDimensions) {
+        return 0;
     }
 }

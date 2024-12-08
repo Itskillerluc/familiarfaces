@@ -3,6 +3,8 @@ package io.github.itskilerluc.familiarfaces.server.entities.ai;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
+import io.github.itskilerluc.familiarfaces.server.entities.BreezeWindCharge;
+import io.github.itskilerluc.familiarfaces.server.init.MemoryModuleTypeRegistry;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -31,17 +33,17 @@ public class Shoot extends Behavior<Breeze> {
                 ImmutableMap.of(
                         MemoryModuleType.ATTACK_TARGET,
                         MemoryStatus.VALUE_PRESENT,
-                        MemoryModuleType.BREEZE_SHOOT_COOLDOWN,
+                        MemoryModuleTypeRegistry.BREEZE_SHOOT_COOLDOWN.get(),
                         MemoryStatus.VALUE_ABSENT,
-                        MemoryModuleType.BREEZE_SHOOT_CHARGING,
+                        MemoryModuleTypeRegistry.BREEZE_SHOOT_CHARGING.get(),
                         MemoryStatus.VALUE_ABSENT,
-                        MemoryModuleType.BREEZE_SHOOT_RECOVERING,
+                        MemoryModuleTypeRegistry.BREEZE_SHOOT_RECOVERING.get(),
                         MemoryStatus.VALUE_ABSENT,
-                        MemoryModuleType.BREEZE_SHOOT,
+                        MemoryModuleTypeRegistry.BREEZE_SHOOT.get(),
                         MemoryStatus.VALUE_PRESENT,
                         MemoryModuleType.WALK_TARGET,
                         MemoryStatus.VALUE_ABSENT,
-                        MemoryModuleType.BREEZE_JUMP_TARGET,
+                        MemoryModuleTypeRegistry.BREEZE_JUMP_TARGET.get(),
                         MemoryStatus.VALUE_ABSENT
                 ),
                 SHOOT_INITIAL_DELAY_TICKS + 1 + SHOOT_RECOVER_DELAY_TICKS
@@ -49,34 +51,33 @@ public class Shoot extends Behavior<Breeze> {
     }
 
     protected boolean checkExtraStartConditions(ServerLevel level, Breeze owner) {
-        return owner.getPose() != Pose.STANDING
-                ? false
-                : owner.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).map(p_312632_ -> isTargetWithinRange(owner, p_312632_)).map(p_312737_ -> {
+        return owner.getPose() == Pose.STANDING && owner.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).map(p_312632_ -> isTargetWithinRange(owner, p_312632_)).map(p_312737_ -> {
             if (!p_312737_) {
-                owner.getBrain().eraseMemory(MemoryModuleType.BREEZE_SHOOT);
+                owner.getBrain().eraseMemory(MemoryModuleTypeRegistry.BREEZE_SHOOT.get());
             }
 
-            return (Boolean)p_312737_;
+            return (Boolean) p_312737_;
         }).orElse(false);
     }
 
     protected boolean canStillUse(ServerLevel level, Breeze entity, long gameTime) {
-        return entity.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET) && entity.getBrain().hasMemoryValue(MemoryModuleType.BREEZE_SHOOT);
+        return entity.getBrain().hasMemoryValue(MemoryModuleType.ATTACK_TARGET) && entity.getBrain().hasMemoryValue(MemoryModuleTypeRegistry.BREEZE_SHOOT.get());
     }
 
     protected void start(ServerLevel level, Breeze entity, long gameTime) {
-        entity.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(p_312833_ -> entity.setPose(Pose.SHOOTING));
-        entity.getBrain().setMemoryWithExpiry(MemoryModuleType.BREEZE_SHOOT_CHARGING, Unit.INSTANCE, (long)SHOOT_INITIAL_DELAY_TICKS);
-        entity.playSound(SoundEvents.BREEZE_INHALE, 1.0F, 1.0F);
+        entity.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(p_312833_ -> entity.setExtraPose(ExtraPose.SHOOTING));
+        entity.getBrain().setMemoryWithExpiry(MemoryModuleTypeRegistry.BREEZE_SHOOT_CHARGING.get(), Unit.INSTANCE, (long)SHOOT_INITIAL_DELAY_TICKS);
+        //todo entity.playSound(SoundEvents.BREEZE_INHALE, 1.0F, 1.0F);
     }
 
     protected void stop(ServerLevel level, Breeze entity, long gameTime) {
-        if (entity.getPose() == Pose.SHOOTING) {
+        if (entity.getExtraPose() == ExtraPose.SHOOTING) {
             entity.setPose(Pose.STANDING);
+            entity.setExtraPose(ExtraPose.NONE);
         }
 
-        entity.getBrain().setMemoryWithExpiry(MemoryModuleType.BREEZE_SHOOT_COOLDOWN, Unit.INSTANCE, (long)SHOOT_COOLDOWN_TICKS);
-        entity.getBrain().eraseMemory(MemoryModuleType.BREEZE_SHOOT);
+        entity.getBrain().setMemoryWithExpiry(MemoryModuleTypeRegistry.BREEZE_SHOOT_COOLDOWN.get(), Unit.INSTANCE, (long)SHOOT_COOLDOWN_TICKS);
+        entity.getBrain().eraseMemory(MemoryModuleTypeRegistry.BREEZE_SHOOT.get());
     }
 
     protected void tick(ServerLevel level, Breeze owner, long gameTime) {
@@ -84,14 +85,14 @@ public class Shoot extends Behavior<Breeze> {
         LivingEntity livingentity = brain.getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
         if (livingentity != null) {
             owner.lookAt(EntityAnchorArgument.Anchor.EYES, livingentity.position());
-            if (!brain.getMemory(MemoryModuleType.BREEZE_SHOOT_CHARGING).isPresent() && !brain.getMemory(MemoryModuleType.BREEZE_SHOOT_RECOVERING).isPresent()) {
-                brain.setMemoryWithExpiry(MemoryModuleType.BREEZE_SHOOT_RECOVERING, Unit.INSTANCE, (long)SHOOT_RECOVER_DELAY_TICKS);
+            if (!brain.getMemory(MemoryModuleTypeRegistry.BREEZE_SHOOT_CHARGING.get()).isPresent() && !brain.getMemory(MemoryModuleTypeRegistry.BREEZE_SHOOT_RECOVERING.get()).isPresent()) {
+                brain.setMemoryWithExpiry(MemoryModuleTypeRegistry.BREEZE_SHOOT_RECOVERING.get(), Unit.INSTANCE, (long)SHOOT_RECOVER_DELAY_TICKS);
                 if (isFacingTarget(owner, livingentity)) {
                     double d0 = livingentity.getX() - owner.getX();
                     double d1 = livingentity.getY(livingentity.isPassenger() ? 0.8 : 0.3) - owner.getY(0.5);
                     double d2 = livingentity.getZ() - owner.getZ();
                     BreezeWindCharge breezewindcharge = new BreezeWindCharge(owner, level);
-                    owner.playSound(SoundEvents.BREEZE_SHOOT, 1.5F, 1.0F);
+                    //todo owner.playSound(SoundEvents.BREEZE_SHOOT, 1.5F, 1.0F);
                     breezewindcharge.shoot(d0, d1, d2, 0.7F, (float)(5 - level.getDifficulty().getId() * 4));
                     level.addFreshEntity(breezewindcharge);
                 }
