@@ -319,7 +319,7 @@ public class Breeze extends Monster {
             var entity = source.getDirectEntity();
             if (entity instanceof Projectile projectile) {
                 if (projectile.getType() != EntityTypeRegistry.BREEZE_WIND_CHARGE.get() && projectile.getType() != EntityTypeRegistry.WIND_CHARGE.get()) {
-                    // todo: level().playSound(null, this, SoundEvents.BREEZE_DEFLECT, this.getSoundSource(), 1.0F, 1.0F);
+                    level().playSound(null, this, SoundEventRegistry.BREEZE_DEFLECT.get(), this.getSoundSource(), 1.0F, 1.0F);
                     float f = 170.0F + random.nextFloat() * 20.0F;
                     projectile.setDeltaMovement(projectile.getDeltaMovement().scale(-0.5));
                     projectile.setYRot(projectile.getYRot() + f);

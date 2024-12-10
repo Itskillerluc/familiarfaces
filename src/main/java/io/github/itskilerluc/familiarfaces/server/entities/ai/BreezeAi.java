@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
 import io.github.itskilerluc.familiarfaces.server.init.MemoryModuleTypeRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.SensorTypeRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Mob;
@@ -103,7 +104,7 @@ public class BreezeAi {
         @Override
         protected void start(@NotNull ServerLevel serverLevel, @NotNull Mob mob, long GameTime) {
             super.start(serverLevel, mob, GameTime);
-            //TODO mob.playSound(SoundEvents.BREEZE_SLIDE);
+            mob.playSound(SoundEventRegistry.BREEZE_SLIDE.get());
             if (mob instanceof Breeze breeze) {
                 breeze.setExtraPose(ExtraPose.SLIDING);
             }

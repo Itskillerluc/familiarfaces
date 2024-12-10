@@ -7,7 +7,9 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,7 +22,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.*;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -38,11 +42,11 @@ import java.util.*;
 public class AdvancedExplosion extends Explosion {
     private static final SimpleExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(true, true, Optional.empty(), Optional.empty());
     private static final Random RANDOM = new Random();
+    public final float radius;
     private final ParticleOptions smallExplosionParticles;
     private final ParticleOptions largeExplosionParticles;
     private final SoundEvent explosionSound;
     private final Level level;
-    public final float radius;
     private final SimpleExplosionDamageCalculator damageCalculator;
     private final boolean fire;
     private final BlockInteraction blockInteraction;
@@ -107,6 +111,28 @@ public class AdvancedExplosion extends Explosion {
         this.blockInteraction = blockInteraction;
     }
 
+    private static Explosion.BlockInteraction getDestroyType(GameRules.Key<GameRules.BooleanValue> pGameRule, Level level) {
+        return level.getGameRules().getBoolean(pGameRule) ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.DESTROY;
+    }
+
+    private static void addBlockDrops(ObjectArrayList<Pair<ItemStack, BlockPos>> pDropPositionArray, ItemStack pStack, BlockPos pPos) {
+        int i = pDropPositionArray.size();
+
+        for (int j = 0; j < i; ++j) {
+            Pair<ItemStack, BlockPos> pair = pDropPositionArray.get(j);
+            ItemStack itemstack = pair.getFirst();
+            if (ItemEntity.areMergable(itemstack, pStack)) {
+                ItemStack itemstack1 = ItemEntity.merge(itemstack, pStack, 16);
+                pDropPositionArray.set(j, Pair.of(itemstack1, pair.getSecond()));
+                if (pStack.isEmpty()) {
+                    return;
+                }
+            }
+        }
+
+        pDropPositionArray.add(Pair.of(pStack, pPos));
+    }
+
     public static AdvancedExplosion explode(
             Level level,
             @Nullable Entity source,
@@ -149,17 +175,28 @@ public class AdvancedExplosion extends Explosion {
         if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(level, explosion)) return explosion;
         explosion.explode();
         explosion.finalizeExplosion(spawnParticles);
-        return explosion;
-    }
 
-    private static Explosion.BlockInteraction getDestroyType(GameRules.Key<GameRules.BooleanValue> pGameRule, Level level) {
-        return level.getGameRules().getBoolean(pGameRule) ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.DESTROY;
+        if (!explosion.interactsWithBlocks()) {
+            explosion.clearToBlow();
+        }
+
+        if (level instanceof ServerLevel serverLevel) {
+            for (ServerPlayer serverPlayer : serverLevel.players()) {
+                if (serverPlayer.distanceToSqr(x, y, z) < 4096.0d) {
+
+                    //fixme also shows explosion particle
+                    serverPlayer.connection.send(new ClientboundExplodePacket(x, y, z, radius, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer)));
+                }
+            }
+        }
+
+        return explosion;
     }
 
     public void explode() {
         level.gameEvent(getDirectSourceEntity(), GameEvent.EXPLODE, new Vec3(getPosition().x, getPosition().y, getPosition().z));
         Set<BlockPos> set = Sets.newHashSet();
-
+        //todo fix sound
         for (int j = 0; j < 16; j++) {
             for (int k = 0; k < 16; k++) {
                 for (int l = 0; l < 16; l++) {
@@ -278,7 +315,9 @@ public class AdvancedExplosion extends Explosion {
                 particleoptions = this.smallExplosionParticles;
             }
 
-            this.level.addParticle(particleoptions, getPosition().x, getPosition().y, getPosition().z, 1.0, 0.0, 0.0);
+            if (level instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(particleoptions, getPosition().x, getPosition().y, getPosition().z, 1, 1.0, 0.0, 0.0, 0);
+            }
         }
 
         if (flag) {
@@ -287,7 +326,7 @@ public class AdvancedExplosion extends Explosion {
 
             Util.shuffle(ObjectArrayList.wrap(getToBlow().toArray(BlockPos[]::new)), this.level.random);
 
-            for(BlockPos blockpos : this.getToBlow()) {
+            for (BlockPos blockpos : this.getToBlow()) {
                 BlockState blockstate = this.level.getBlockState(blockpos);
                 if (!blockstate.isAir()) {
                     BlockPos blockpos1 = blockpos.immutable();
@@ -311,7 +350,7 @@ public class AdvancedExplosion extends Explosion {
                 }
             }
 
-            for(Pair<ItemStack, BlockPos> pair : objectarraylist) {
+            for (Pair<ItemStack, BlockPos> pair : objectarraylist) {
                 Block.popResource(this.level, pair.getSecond(), pair.getFirst());
             }
 
@@ -327,23 +366,5 @@ public class AdvancedExplosion extends Explosion {
                 }
             }
         }
-    }
-
-    private static void addBlockDrops(ObjectArrayList<Pair<ItemStack, BlockPos>> pDropPositionArray, ItemStack pStack, BlockPos pPos) {
-        int i = pDropPositionArray.size();
-
-        for(int j = 0; j < i; ++j) {
-            Pair<ItemStack, BlockPos> pair = pDropPositionArray.get(j);
-            ItemStack itemstack = pair.getFirst();
-            if (ItemEntity.areMergable(itemstack, pStack)) {
-                ItemStack itemstack1 = ItemEntity.merge(itemstack, pStack, 16);
-                pDropPositionArray.set(j, Pair.of(itemstack1, pair.getSecond()));
-                if (pStack.isEmpty()) {
-                    return;
-                }
-            }
-        }
-
-        pDropPositionArray.add(Pair.of(pStack, pPos));
     }
 }

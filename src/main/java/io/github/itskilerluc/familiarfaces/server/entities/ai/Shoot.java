@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
 import io.github.itskilerluc.familiarfaces.server.entities.BreezeWindCharge;
 import io.github.itskilerluc.familiarfaces.server.init.MemoryModuleTypeRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -67,7 +68,7 @@ public class Shoot extends Behavior<Breeze> {
     protected void start(ServerLevel level, Breeze entity, long gameTime) {
         entity.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(p_312833_ -> entity.setExtraPose(ExtraPose.SHOOTING));
         entity.getBrain().setMemoryWithExpiry(MemoryModuleTypeRegistry.BREEZE_SHOOT_CHARGING.get(), Unit.INSTANCE, (long)SHOOT_INITIAL_DELAY_TICKS);
-        //todo entity.playSound(SoundEvents.BREEZE_INHALE, 1.0F, 1.0F);
+        entity.playSound(SoundEventRegistry.BREEZE_INHALE.get(), 1.0F, 1.0F);
     }
 
     protected void stop(ServerLevel level, Breeze entity, long gameTime) {
@@ -92,7 +93,7 @@ public class Shoot extends Behavior<Breeze> {
                     double d1 = livingentity.getY(livingentity.isPassenger() ? 0.8 : 0.3) - owner.getY(0.5);
                     double d2 = livingentity.getZ() - owner.getZ();
                     BreezeWindCharge breezewindcharge = new BreezeWindCharge(owner, level);
-                    //todo owner.playSound(SoundEvents.BREEZE_SHOOT, 1.5F, 1.0F);
+                    owner.playSound(SoundEventRegistry.BREEZE_SHOOT.get(), 1.5F, 1.0F);
                     breezewindcharge.shoot(d0, d1, d2, 0.7F, (float)(5 - level.getDifficulty().getId() * 4));
                     level.addFreshEntity(breezewindcharge);
                 }

@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
 import io.github.itskilerluc.familiarfaces.server.init.MemoryModuleTypeRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -114,7 +115,7 @@ public class LongJump extends Behavior<Breeze> {
         }
 
         entity.setExtraPose(ExtraPose.INHALING);
-        //todo level.playSound(null, entity, SoundEvents.BREEZE_CHARGE, SoundSource.HOSTILE, 1.0F, 1.0F);
+        level.playSound(null, entity, SoundEventRegistry.BREEZE_CHARGE.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
         entity.getBrain()
                 .getMemory(MemoryModuleTypeRegistry.BREEZE_JUMP_TARGET.get())
                 .ifPresent(p_312818_ -> entity.lookAt(EntityAnchorArgument.Anchor.EYES, p_312818_.getCenter()));
@@ -140,13 +141,13 @@ public class LongJump extends Behavior<Breeze> {
                 owner.getBrain().setMemory(MemoryModuleTypeRegistry.BREEZE_LEAVING_WATER.get(), Unit.INSTANCE);
             }
 
-            //todo owner.playSound(SoundEvents.BREEZE_JUMP, 1.0F, 1.0F);
+            owner.playSound(SoundEventRegistry.BREEZE_JUMP.get(), 1.0F, 1.0F);
             owner.setPose(Pose.LONG_JUMPING);
             owner.setYRot(owner.yBodyRot);
             owner.setDiscardFriction(true);
             owner.setDeltaMovement(vec3);
         } else if (isFinishedJumping(owner)) {
-            //todo owner.playSound(SoundEvents.BREEZE_LAND, 1.0F, 1.0F);
+            owner.playSound(SoundEventRegistry.BREEZE_LAND.get(), 1.0F, 1.0F);
             owner.setPose(Pose.STANDING);
             owner.setDiscardFriction(false);
             boolean flag1 = owner.getBrain().hasMemoryValue(MemoryModuleType.HURT_BY);

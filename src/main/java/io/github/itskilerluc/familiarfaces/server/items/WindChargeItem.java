@@ -1,6 +1,7 @@
 package io.github.itskilerluc.familiarfaces.server.items;
 
 import io.github.itskilerluc.familiarfaces.server.entities.WindCharge;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.sounds.SoundEvents;
@@ -36,8 +37,7 @@ public class WindChargeItem extends Item {
                 player.getX(),
                 player.getY(),
                 player.getZ(),
-                //todo SoundEvents.WIND_CHARGE_THROW,
-                SoundEvents.ARROW_SHOOT,
+                SoundEventRegistry.WIND_CHARGE_THROW.get(),
                 SoundSource.NEUTRAL,
                 0.5F,
                 0.4F / (p_326306_.getRandom().nextFloat() * 0.4F + 0.8F)
@@ -52,24 +52,7 @@ public class WindChargeItem extends Item {
     }
 
 
-    public Projectile asProjectile(Level p_338589_, Position p_338670_, ItemStack p_338308_, Direction p_338206_) {
-        RandomSource randomsource = p_338589_.getRandom();
-        double d0 = randomsource.triangle(p_338206_.getStepX(), 0.11485000000000001);
-        double d1 = randomsource.triangle(p_338206_.getStepY(), 0.11485000000000001);
-        double d2 = randomsource.triangle(p_338206_.getStepZ(), 0.11485000000000001);
-        Vec3 vec3 = new Vec3(d0, d1, d2);
-        WindCharge windcharge = new WindCharge(p_338589_, p_338670_.x(), p_338670_.y(), p_338670_.z(), vec3);
-        windcharge.setDeltaMovement(vec3);
-        return windcharge;
+    public Projectile asProjectile(Level p_338589_, Position p_338670_, ItemStack p_338308_) {
+        return new WindCharge(p_338589_, p_338670_.x(), p_338670_.y(), p_338670_.z(), Vec3.ZERO);
     }
-
-    //todo add dispenser behaviour
-    /*public ProjectileItem.DispenseConfig createDispenseConfig() {
-        return ProjectileItem.DispenseConfig.builder()
-                .positionFunction((p_338288_, p_338801_) -> DispenserBlock.getDispensePosition(p_338288_, 1.0, Vec3.ZERO))
-                .uncertainty(6.6666665F)
-                .power(1.0F)
-                .overrideDispenseEvent(1051)
-                .build();
-    }*/
 }

@@ -2,6 +2,8 @@ package io.github.itskilerluc.familiarfaces.server.entities;
 
 import io.github.itskilerluc.familiarfaces.server.entities.ai.ProjectileDeflection;
 import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.ParticleTypeRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.Tags;
 import io.github.itskilerluc.familiarfaces.server.util.AdvancedExplosion;
 import io.github.itskilerluc.familiarfaces.server.util.SimpleExplosionDamageCalculator;
@@ -69,10 +71,9 @@ public class WindCharge extends AbstractWindCharge {
                 false,
                 Level.ExplosionInteraction.NONE,
                 true,
-                ParticleTypes.EXPLOSION_EMITTER,
-                ParticleTypes.EXPLOSION,
-                //todo SoundEvents.WIND_CHARGE_BURST
-                SoundEvents.TNT_PRIMED
+                ParticleTypeRegistry.GUST_EMITTER_SMALL.get(),
+                ParticleTypeRegistry.GUST_EMITTER_LARGE.get(),
+                SoundEventRegistry.WIND_CHARGE_BURST.get()
         );
     }
 

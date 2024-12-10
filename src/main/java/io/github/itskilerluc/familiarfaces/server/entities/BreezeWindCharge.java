@@ -1,6 +1,8 @@
 package io.github.itskilerluc.familiarfaces.server.entities;
 
 import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.ParticleTypeRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import io.github.itskilerluc.familiarfaces.server.util.AdvancedExplosion;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
@@ -33,12 +35,11 @@ public class BreezeWindCharge extends AbstractWindCharge {
                 pos.z(),
                 3.0F,
                 false,
-                Level.ExplosionInteraction.MOB,
+                Level.ExplosionInteraction.NONE,
                 true,
-                ParticleTypes.EXPLOSION_EMITTER,
-                ParticleTypes.EXPLOSION,
-                //todo SoundEvents.BREEZE_WIND_CHARGE_BURST
-                SoundEvents.GENERIC_EXPLODE
+                ParticleTypeRegistry.GUST_EMITTER_SMALL.get(),
+                ParticleTypeRegistry.GUST_EMITTER_LARGE.get(),
+                SoundEventRegistry.BREEZE_WIND_CHARGE_BURST.get()
         );
     }
 

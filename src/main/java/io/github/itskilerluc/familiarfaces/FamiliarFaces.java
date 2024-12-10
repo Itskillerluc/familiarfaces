@@ -20,5 +20,6 @@ public class FamiliarFaces {
         ItemRegistry.ITEMS.register(modEventBus);
         MemoryModuleTypeRegistry.MEMORY_MODULE_TYPES.register(modEventBus);
         SensorTypeRegistry.SENSOR_TYPES.register(modEventBus);
+        ParticleTypeRegistry.PARTICLES.register(modEventBus);
     }
 }
