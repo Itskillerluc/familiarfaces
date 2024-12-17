@@ -7,6 +7,7 @@ import io.github.itskilerluc.familiarfaces.server.entities.WindCharge;
 import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.ItemRegistry;
 import io.github.itskilerluc.familiarfaces.server.items.WindChargeItem;
+import io.github.itskilerluc.familiarfaces.server.networking.FamiliarFacesNetwork;
 import net.minecraft.Util;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
@@ -49,10 +50,13 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerSpawnPlacements(final SpawnPlacementRegisterEvent event) {
         event.register(EntityTypeRegistry.BOGGED.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Bogged::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.REPLACE);
+        event.register(EntityTypeRegistry.BREEZE.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Breeze::checkMonsterSpawnRules, SpawnPlacementRegisterEvent.Operation.REPLACE);
     }
 
     @SubscribeEvent
     public static void registerDispenserBehaviour(final FMLCommonSetupEvent event) {
+        FamiliarFacesNetwork.register();
+
         DispenserBlock.registerBehavior(ItemRegistry.WIND_CHARGE.get(), new AbstractProjectileDispenseBehavior() {
             @Override
             protected Projectile getProjectile(Level pLevel, Position pPosition, ItemStack pStack) {

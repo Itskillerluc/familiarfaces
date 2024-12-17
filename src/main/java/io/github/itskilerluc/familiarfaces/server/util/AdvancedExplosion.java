@@ -2,9 +2,12 @@ package io.github.itskilerluc.familiarfaces.server.util;
 
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
+import io.github.itskilerluc.familiarfaces.server.networking.CustomExplodePacket;
+import io.github.itskilerluc.familiarfaces.server.networking.FamiliarFacesNetwork;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
@@ -21,6 +24,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
@@ -35,12 +39,14 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.network.NetworkDirection;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class AdvancedExplosion extends Explosion {
-    private static final SimpleExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(true, true, Optional.empty(), Optional.empty());
+    public static final SimpleExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(true, true, Optional.empty(), Optional.empty());
     private static final Random RANDOM = new Random();
     public final float radius;
     private final ParticleOptions smallExplosionParticles;
@@ -111,8 +117,63 @@ public class AdvancedExplosion extends Explosion {
         this.blockInteraction = blockInteraction;
     }
 
-    private static Explosion.BlockInteraction getDestroyType(GameRules.Key<GameRules.BooleanValue> pGameRule, Level level) {
-        return level.getGameRules().getBoolean(pGameRule) ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.DESTROY;
+    public AdvancedExplosion(
+            Level level,
+            @javax.annotation.Nullable Entity source,
+            double x,
+            double y,
+            double z,
+            float radius,
+            List<BlockPos> toBlow,
+            BlockInteraction blockInteraction,
+            ParticleOptions smallExplosionParticles,
+            ParticleOptions largeExplosionParticles,
+            Holder<SoundEvent> explosionSound
+    ) {
+        this(
+                level,
+                source,
+                getDefaultDamageSource(level, source),
+                null,
+                x,
+                y,
+                z,
+                radius,
+                false,
+                blockInteraction,
+                smallExplosionParticles,
+                largeExplosionParticles,
+                explosionSound.get()
+        );
+        this.toBlow.addAll(toBlow);
+    }
+
+    private static BlockInteraction getDestroyType(GameRules.Key<GameRules.BooleanValue> pGameRule, Level level) {
+        return level.getGameRules().getBoolean(pGameRule) ? BlockInteraction.DESTROY_WITH_DECAY : BlockInteraction.DESTROY;
+    }
+
+    public static DamageSource getDefaultDamageSource(Level level, @javax.annotation.Nullable Entity source) {
+        return level.damageSources().explosion(source, getIndirectSourceEntityInternal(source));
+    }
+
+    @javax.annotation.Nullable
+    private static LivingEntity getIndirectSourceEntityInternal(@javax.annotation.Nullable Entity source) {
+        if (source == null) {
+            return null;
+        } else if (source instanceof PrimedTnt primedtnt) {
+            return primedtnt.getOwner();
+        } else if (source instanceof LivingEntity) {
+            return (LivingEntity)source;
+        } else {
+            if (source instanceof Projectile projectile) {
+                Entity entity = projectile.getOwner();
+                if (entity instanceof LivingEntity) {
+                    return (LivingEntity)entity;
+                }
+            }
+
+            return null;
+        }
     }
 
     private static void addBlockDrops(ObjectArrayList<Pair<ItemStack, BlockPos>> pDropPositionArray, ItemStack pStack, BlockPos pPos) {
@@ -149,11 +210,11 @@ public class AdvancedExplosion extends Explosion {
             ParticleOptions largeExplosionParticles,
             SoundEvent explosionSound
     ) {
-        Explosion.BlockInteraction explosion$blockinteraction = switch (explosionInteraction) {
+        BlockInteraction explosion$blockinteraction = switch (explosionInteraction) {
             case NONE -> BlockInteraction.KEEP;
             case BLOCK -> getDestroyType(GameRules.RULE_BLOCK_EXPLOSION_DROP_DECAY, level);
             case MOB ->
-                    net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(level, source) ? getDestroyType(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY, level) : BlockInteraction.KEEP;
+                    ForgeEventFactory.getMobGriefingEvent(level, source) ? getDestroyType(GameRules.RULE_MOB_EXPLOSION_DROP_DECAY, level) : BlockInteraction.KEEP;
             case TNT -> getDestroyType(GameRules.RULE_TNT_EXPLOSION_DROP_DECAY, level);
         };
 
@@ -172,7 +233,7 @@ public class AdvancedExplosion extends Explosion {
                 largeExplosionParticles,
                 explosionSound
         );
-        if (net.minecraftforge.event.ForgeEventFactory.onExplosionStart(level, explosion)) return explosion;
+        if (ForgeEventFactory.onExplosionStart(level, explosion)) return explosion;
         explosion.explode();
         explosion.finalizeExplosion(spawnParticles);
 
@@ -185,7 +246,8 @@ public class AdvancedExplosion extends Explosion {
                 if (serverPlayer.distanceToSqr(x, y, z) < 4096.0d) {
 
                     //fixme also shows explosion particle
-                    serverPlayer.connection.send(new ClientboundExplodePacket(x, y, z, radius, explosion.getToBlow(), explosion.getHitPlayers().get(serverPlayer)));
+                    var knockback = explosion.getHitPlayers().get(serverPlayer);
+                    FamiliarFacesNetwork.CHANNEL.sendTo(new CustomExplodePacket(x, y, z, radius, explosion.getToBlow(), knockback == null ? 0 : ((float) knockback.x), knockback == null ? 0 : ((float) knockback.y), knockback == null ? 0 : ((float) knockback.z), smallExplosionParticles, largeExplosionParticles, explosion$blockinteraction, Holder.direct(explosionSound)), serverPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
                 }
             }
         }
@@ -196,7 +258,6 @@ public class AdvancedExplosion extends Explosion {
     public void explode() {
         level.gameEvent(getDirectSourceEntity(), GameEvent.EXPLODE, new Vec3(getPosition().x, getPosition().y, getPosition().z));
         Set<BlockPos> set = Sets.newHashSet();
-        //todo fix sound
         for (int j = 0; j < 16; j++) {
             for (int k = 0; k < 16; k++) {
                 for (int l = 0; l < 16; l++) {
@@ -248,7 +309,7 @@ public class AdvancedExplosion extends Explosion {
         int j2 = Mth.floor(getPosition().z - (double) f2 - 1.0);
         int j1 = Mth.floor(getPosition().z + (double) f2 + 1.0);
         List<Entity> list = this.level.getEntities(getDirectSourceEntity(), new AABB(k1, i2, j2, l1, i1, j1));
-        net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.level, this, list, f2);
+        ForgeEventFactory.onExplosionDetonate(this.level, this, list, f2);
         Vec3 vec3 = new Vec3(getPosition().x, getPosition().y, getPosition().z);
 
         for (Entity entity : list) {
@@ -315,9 +376,8 @@ public class AdvancedExplosion extends Explosion {
                 particleoptions = this.smallExplosionParticles;
             }
 
-            if (level instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(particleoptions, getPosition().x, getPosition().y, getPosition().z, 1, 1.0, 0.0, 0.0, 0);
-            }
+            level.addParticle(particleoptions, getPosition().x, getPosition().y, getPosition().z, 0.0, 0.0, 0.0);
+
         }
 
         if (flag) {
@@ -335,7 +395,7 @@ public class AdvancedExplosion extends Explosion {
                         if (this.level instanceof ServerLevel serverlevel) {
                             BlockEntity blockentity = blockstate.hasBlockEntity() ? this.level.getBlockEntity(blockpos) : null;
                             LootParams.Builder lootparams$builder = (new LootParams.Builder(serverlevel)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockpos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockentity).withOptionalParameter(LootContextParams.THIS_ENTITY, getDirectSourceEntity());
-                            if (this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY) {
+                            if (this.blockInteraction == BlockInteraction.DESTROY_WITH_DECAY) {
                                 lootparams$builder.withParameter(LootContextParams.EXPLOSION_RADIUS, this.radius);
                             }
                             boolean flag1 = this.getIndirectSourceEntity() instanceof Player;
