@@ -1,94 +1,94 @@
 {
   "entity.bogged.ambient": {
     "sounds": [
-      "bogged_ambient1",
-      "bogged_ambient2",
-      "bogged_ambient3",
-      "bogged_ambient4"
+      "familiar_faces:bogged_ambient1",
+      "familiar_faces:bogged_ambient2",
+      "familiar_faces:bogged_ambient3",
+      "familiar_faces:bogged_ambient4"
     ],
     "subtitle": "subtitles.entity.bogged.ambient"
   },
   "entity.bogged.death": {
     "sounds": [
-      "bogged_death"
+      "familiar_faces:bogged_death"
     ],
     "subtitle": "subtitles.entity.bogged.death"
   },
   "entity.bogged.hurt": {
     "sounds": [
-      "bogged_hurt1",
-      "bogged_hurt2",
-      "bogged_hurt3",
-      "bogged_hurt4"
+      "familiar_faces:bogged_hurt1",
+      "familiar_faces:bogged_hurt2",
+      "familiar_faces:bogged_hurt3",
+      "familiar_faces:bogged_hurt4"
     ],
     "subtitle": "subtitles.entity.bogged.hurt"
   },
   "entity.bogged.step": {
     "sounds": [
-      "bogged_step1",
-      "bogged_step2",
-      "bogged_step3",
-      "bogged_step4"
+      "familiar_faces:bogged_step1",
+      "familiar_faces:bogged_step2",
+      "familiar_faces:bogged_step3",
+      "familiar_faces:bogged_step4"
     ],
     "subtitle": "subtitles.block.generic.footsteps"
   },
   "entity.breeze.charge": {
     "sounds": [
-      "breeze_charge1",
-      "breeze_charge2",
-      "breeze_charge3"
+      "familiar_faces:breeze_charge1",
+      "familiar_faces:breeze_charge2",
+      "familiar_faces:breeze_charge3"
     ],
     "subtitle": "subtitles.entity.breeze.charge"
   },
   "entity.breeze.death": {
     "sounds": [
-      "breeze_death1",
-      "breeze_death2"
+      "familiar_faces:breeze_death1",
+      "familiar_faces:breeze_death2"
     ],
     "subtitle": "subtitles.entity.breeze.death"
   },
   "entity.breeze.deflect": {
     "sounds": [
-      "breeze_deflect1",
-      "breeze_deflect2",
-      "breeze_deflect3"
+      "familiar_faces:breeze_deflect1",
+      "familiar_faces:breeze_deflect2",
+      "familiar_faces:breeze_deflect3"
     ],
     "subtitle": "subtitles.entity.breeze.deflect"
   },
   "entity.breeze.hurt": {
     "sounds": [
-      "breeze_hurt1",
-      "breeze_hurt2",
-      "breeze_hurt3"
+      "familiar_faces:breeze_hurt1",
+      "familiar_faces:breeze_hurt2",
+      "familiar_faces:breeze_hurt3"
     ],
     "subtitle": "subtitles.entity.breeze.hurt"
   },
   "entity.breeze.idle_air": {
     "sounds": [
-      "breeze_idle_air1",
-      "breeze_idle_air2",
-      "breeze_idle_air3",
-      "breeze_idle_air4"
+      "familiar_faces:breeze_idle_air1",
+      "familiar_faces:breeze_idle_air2",
+      "familiar_faces:breeze_idle_air3",
+      "familiar_faces:breeze_idle_air4"
     ],
     "subtitle": "subtitles.entity.breeze.idle_air"
   },
   "entity.breeze.idle_ground": {
     "sounds": [
-      "breeze_idle1",
-      "breeze_idle2",
-      "breeze_idle3",
-      "breeze_idle4"
+      "familiar_faces:breeze_idle1",
+      "familiar_faces:breeze_idle2",
+      "familiar_faces:breeze_idle3",
+      "familiar_faces:breeze_idle4"
     ],
     "subtitle": "subtitles.entity.breeze.idle_ground"
   },
   "entity.breeze.inhale": {
     "sounds": [
-      "breeze_inhale1",
+      "familiar_faces:breeze_inhale1",
       {
         "name": "breeze_inhale1",
         "pitch": 1.1
       },
-      "breeze_inhale2",
+      "familiar_faces:breeze_inhale2",
       {
         "name": "breeze_inhale2",
         "pitch": 1.1
@@ -98,21 +98,21 @@
   },
   "entity.breeze.jump": {
     "sounds": [
-      "breeze_jump1",
-      "breeze_jump2"
+      "familiar_faces:breeze_jump1",
+      "familiar_faces:breeze_jump2"
     ],
     "subtitle": "subtitles.entity.breeze.jump"
   },
   "entity.breeze.land": {
     "sounds": [
-      "breeze_land1",
-      "breeze_land2"
+      "familiar_faces:breeze_land1",
+      "familiar_faces:breeze_land2"
     ],
     "subtitle": "subtitles.entity.breeze.land"
   },
   "entity.breeze.shoot": {
     "sounds": [
-      "breeze_shoot",
+      "familiar_faces:breeze_shoot",
       {
         "name": "breeze_shoot",
         "pitch": 1.1
@@ -126,31 +126,31 @@
   },
   "entity.breeze.slide": {
     "sounds": [
-      "breeze_slide1",
-      "breeze_slide3",
-      "breeze_slide2",
-      "breeze_slide4"
+      "familiar_faces:breeze_slide1",
+      "familiar_faces:breeze_slide3",
+      "familiar_faces:breeze_slide2",
+      "familiar_faces:breeze_slide4"
     ],
     "subtitle": "subtitles.entity.breeze.slide"
   },
   "entity.breeze.whirl": {
     "sounds": [
-      "breeze_whirl"
+      "familiar_faces:breeze_whirl"
     ],
     "subtitle": "subtitles.entity.breeze.whirl"
   },
   "entity.breeze.wind_burst": {
     "sounds": [
       {
-        "name": "breeze_wind_burst1",
+        "name": "wind_burst_1",
         "pitch": 1.2
       },
       {
-        "name": "breeze_wind_burst2",
+        "name": "wind_burst_2",
         "pitch": 1.2
       },
       {
-        "name": "breeze_wind_burst3",
+        "name": "wind_burst_3",
         "pitch": 1.2
       }
     ],
@@ -166,17 +166,15 @@
     "sounds": [
       {
         "attenuation_distance": 8,
-        "name": "entity/wind_charge/wind_burst1",
+        "name": "familiar_faces:wind_burst_1",
         "pitch": 1.25
       },
       {
-        "attenuation_distance": 8,
-        "name": "entity/wind_charge/wind_burst2",
+        "name": "familiar_faces:wind_burst_2",
         "pitch": 1.25
       },
       {
-        "attenuation_distance": 8,
-        "name": "entity/wind_charge/wind_burst3",
+        "name": "familiar_faces:wind_burst_3",
         "pitch": 1.25
       }
     ],

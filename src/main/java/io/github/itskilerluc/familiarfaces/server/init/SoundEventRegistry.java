@@ -47,10 +47,10 @@ public class SoundEventRegistry {
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.breeze.hurt")));
     public static final RegistryObject<SoundEvent> BREEZE_WHIRL = SOUND_EVENTS.register("entity.breeze.whirl",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.breeze.whirl")));
-    public static final RegistryObject<SoundEvent> BREEZE_WIND_CHARGE_BURST = SOUND_EVENTS.register("entity.breeze.wind_charge_burst",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.breeze.wind_charge_burst")));
+    public static final RegistryObject<SoundEvent> BREEZE_WIND_CHARGE_BURST = SOUND_EVENTS.register("entity.breeze.wind_burst",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.breeze.wind_burst")));
     public static final RegistryObject<SoundEvent> WIND_CHARGE_THROW = SOUND_EVENTS.register("entity.wind_charge.throw",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.wind_charge.throw")));
-    public static final RegistryObject<SoundEvent> WIND_CHARGE_BURST = SOUND_EVENTS.register("entity.wind_charge.burst",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.wind_charge.burst")));
+    public static final RegistryObject<SoundEvent> WIND_CHARGE_BURST = SOUND_EVENTS.register("entity.wind_charge.wind_burst",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.wind_charge.wind_burst")));
 }
