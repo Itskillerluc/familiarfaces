@@ -17,6 +17,16 @@ public class ItemRegistry {
     public static final RegistryObject<ForgeSpawnEggItem> BREEZE_SPAWN_EGG = ITEMS.register("breeze_spawn_egg",
             () -> new ForgeSpawnEggItem(EntityTypeRegistry.BREEZE, 11506911, 9529055, new Item.Properties()));
 
+    public static final RegistryObject<ForgeSpawnEggItem> ARMADILLO_SPAWN_EGG = ITEMS.register("armadillo_spawn_egg",
+            () -> new ForgeSpawnEggItem(EntityTypeRegistry.ARMADILLO, 11366765, 8538184, new Item.Properties()));
+
     public static final RegistryObject<WindChargeItem> WIND_CHARGE = ITEMS.register("wind_charge",
             () -> new WindChargeItem(new Item.Properties()));
+
+    public static final RegistryObject<Item> BREEZE_ROD = ITEMS.register("breeze_rod",
+            () -> new Item(new Item.Properties()));
+
+    public static final RegistryObject<Item> ARMADILLO_SCUTE = ITEMS.register("armadillo_scute",
+            () -> new Item(new Item.Properties()));
+
 }

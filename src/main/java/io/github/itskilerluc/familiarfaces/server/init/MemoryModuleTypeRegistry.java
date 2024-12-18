@@ -30,4 +30,7 @@ public class MemoryModuleTypeRegistry {
             () -> new MemoryModuleType<>(Optional.of(BlockPos.CODEC)));
     public static final RegistryObject<MemoryModuleType<Unit>> BREEZE_LEAVING_WATER = MEMORY_MODULE_TYPES.register("breeze_leaving_water",
             () -> new MemoryModuleType<>(Optional.of(Codec.unit(Unit.INSTANCE))));
+
+    public static final RegistryObject<MemoryModuleType<Boolean>> DANGER_DETECTED_RECENTLY = MEMORY_MODULE_TYPES.register("danger_detected_recently",
+            () -> new MemoryModuleType<>(Optional.of(Codec.BOOL)));
 }

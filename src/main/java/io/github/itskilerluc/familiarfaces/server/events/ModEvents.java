@@ -1,6 +1,7 @@
 package io.github.itskilerluc.familiarfaces.server.events;
 
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
+import io.github.itskilerluc.familiarfaces.server.entities.Armadillo;
 import io.github.itskilerluc.familiarfaces.server.entities.Bogged;
 import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
 import io.github.itskilerluc.familiarfaces.server.entities.WindCharge;
@@ -34,6 +35,7 @@ public class ModEvents {
     public static void entityAttributeCreation(final EntityAttributeCreationEvent event) {
         event.put(EntityTypeRegistry.BOGGED.get(), Bogged.createAttributes().build());
         event.put(EntityTypeRegistry.BREEZE.get(), Breeze.createAttributes().build());
+        event.put(EntityTypeRegistry.ARMADILLO.get(), Armadillo.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -41,9 +43,14 @@ public class ModEvents {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(ItemRegistry.BOGGED_SPAWN_EGG);
             event.accept(ItemRegistry.BREEZE_SPAWN_EGG);
+            event.accept(ItemRegistry.ARMADILLO_SPAWN_EGG);
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ItemRegistry.WIND_CHARGE);
+        }
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
+        {
+            event.accept(ItemRegistry.BREEZE_ROD);
         }
     }
 

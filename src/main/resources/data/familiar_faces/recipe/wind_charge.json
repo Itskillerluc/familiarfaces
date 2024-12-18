@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "familiar_faces:breeze_rod"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "familiar_faces:wind_charge"
+  }
+}

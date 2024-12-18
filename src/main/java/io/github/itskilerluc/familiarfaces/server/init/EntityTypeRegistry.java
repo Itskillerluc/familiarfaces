@@ -1,10 +1,7 @@
 package io.github.itskilerluc.familiarfaces.server.init;
 
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
-import io.github.itskilerluc.familiarfaces.server.entities.Bogged;
-import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
-import io.github.itskilerluc.familiarfaces.server.entities.BreezeWindCharge;
-import io.github.itskilerluc.familiarfaces.server.entities.WindCharge;
+import io.github.itskilerluc.familiarfaces.server.entities.*;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -29,4 +26,8 @@ public class EntityTypeRegistry {
     public static final RegistryObject<EntityType<Breeze>> BREEZE = ENTITY_TYPES.register("breeze",
             () -> EntityType.Builder.of(Breeze::new, MobCategory.MONSTER).sized(0.6F, 1.77F)
                     .build("breeze"));
+
+    public static final RegistryObject<EntityType<Armadillo>> ARMADILLO = ENTITY_TYPES.register("armadillo",
+            () -> EntityType.Builder.of(Armadillo::new, MobCategory.CREATURE).sized(0.7F, 0.65F)
+                    .build("armadillo"));
 }

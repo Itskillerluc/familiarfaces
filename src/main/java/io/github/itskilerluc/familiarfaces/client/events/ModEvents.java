@@ -2,6 +2,7 @@ package io.github.itskilerluc.familiarfaces.client.events;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
+import io.github.itskilerluc.familiarfaces.client.models.entity.ArmadilloModel;
 import io.github.itskilerluc.familiarfaces.client.models.entity.BoggedModel;
 import io.github.itskilerluc.familiarfaces.client.models.entity.BreezeModel;
 import io.github.itskilerluc.familiarfaces.client.models.entity.WindChargeModel;
@@ -34,11 +35,13 @@ public class ModEvents {
         event.registerEntityRenderer(EntityTypeRegistry.WIND_CHARGE.get(), WindChargeRenderer::new);
         event.registerEntityRenderer(EntityTypeRegistry.BREEZE_WIND_CHARGE.get(), WindChargeRenderer::new);
         event.registerEntityRenderer(EntityTypeRegistry.BREEZE.get(), BreezeRenderer::new);
+        event.registerEntityRenderer(EntityTypeRegistry.ARMADILLO.get(), ArmadilloRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerLayers(final EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(BoggedModel.BOGGED, BoggedModel::createBodyLayer);
+        event.registerLayerDefinition(ArmadilloModel.ARMADILLO, ArmadilloModel::createBodyLayer);
         event.registerLayerDefinition(BreezeModel.BREEZE, () -> BreezeModel.createBodyLayer(32, 32));
         event.registerLayerDefinition(BreezeWindLayer.BREEZE_WIND, () -> BreezeModel.createBodyLayer(128, 128));
         event.registerLayerDefinition(BoggedModel.BOGGED_INNER_ARMOR,
