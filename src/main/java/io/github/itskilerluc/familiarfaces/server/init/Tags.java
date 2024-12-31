@@ -33,5 +33,8 @@ public class Tags {
     public static class DamageTypes {
         public static final TagKey<DamageType> PANIC_ENVIRONMENTAL_CAUSES = TagKey.create(Registries.DAMAGE_TYPE,
                 new ResourceLocation(FamiliarFaces.MODID, "panic_environmental_causes"));
+
+        public static final TagKey<DamageType> BYPASSES_WOLF_ARMOR = TagKey.create(Registries.DAMAGE_TYPE,
+                new ResourceLocation(FamiliarFaces.MODID, "bypasses_wolf_armor"));
     }
 }

@@ -1,27 +1,26 @@
 package io.github.itskilerluc.familiarfaces.server.events;
 
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
+import io.github.itskilerluc.familiarfaces.server.capability.IWolfArmorCapability;
 import io.github.itskilerluc.familiarfaces.server.entities.Armadillo;
 import io.github.itskilerluc.familiarfaces.server.entities.Bogged;
 import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
-import io.github.itskilerluc.familiarfaces.server.entities.WindCharge;
 import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.ItemRegistry;
-import io.github.itskilerluc.familiarfaces.server.items.WindChargeItem;
 import io.github.itskilerluc.familiarfaces.server.networking.FamiliarFacesNetwork;
-import net.minecraft.Util;
 import net.minecraft.core.Position;
+import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
-import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
@@ -47,10 +46,11 @@ public class ModEvents {
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ItemRegistry.WIND_CHARGE);
+            event.accept(ItemRegistry.WOLF_ARMOR);
         }
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
-        {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(ItemRegistry.BREEZE_ROD);
+            event.accept(ItemRegistry.ARMADILLO_SCUTE);
         }
     }
 
@@ -70,5 +70,20 @@ public class ModEvents {
                 return ItemRegistry.WIND_CHARGE.get().asProjectile(pLevel, pPosition, pStack);
             }
         });
+
+        event.enqueueWork(() -> {
+            CauldronInteraction.WATER.put(ItemRegistry.WOLF_ARMOR.get(), CauldronInteraction.DYED_ITEM);
+        });
+    }
+
+    @SubscribeEvent
+    public static void registerItemColors(final RegisterColorHandlersEvent.Item event) {
+        event.register((ItemStack stack, int tintIndex) ->
+                tintIndex != 1 ? -1 : ((DyeableLeatherItem) stack.getItem()).getColor(stack), ItemRegistry.WOLF_ARMOR.get());
+    }
+
+    @SubscribeEvent
+    public static void capabilityEvent(final RegisterCapabilitiesEvent event) {
+        event.register(IWolfArmorCapability.class);
     }
 }

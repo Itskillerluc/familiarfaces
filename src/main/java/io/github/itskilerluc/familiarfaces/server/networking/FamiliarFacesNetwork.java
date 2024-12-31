@@ -19,6 +19,12 @@ public class FamiliarFacesNetwork {
                 .decoder(CustomExplodePacket::new)
                 .consumerMainThread(CustomExplodePacket::handle)
                 .add();
+
+        CHANNEL.messageBuilder(SyncWolfArmorPacket.class, 1)
+                .encoder(SyncWolfArmorPacket::write)
+                .decoder(SyncWolfArmorPacket::new)
+                .consumerMainThread(SyncWolfArmorPacket::handle)
+                .add();
     }
 }
 

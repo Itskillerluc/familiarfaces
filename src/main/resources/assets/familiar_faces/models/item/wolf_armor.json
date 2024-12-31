@@ -1,0 +1,14 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "familiar_faces:item/wolf_armor"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "familiar_faces:wolf_armor_dyed": 1
+      },
+      "model": "familiar_faces:item/wolf_armor_color"
+    }
+  ]
+}

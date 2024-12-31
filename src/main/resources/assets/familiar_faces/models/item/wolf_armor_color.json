@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "familiar_faces:item/wolf_armor",
+    "layer1": "familiar_faces:item/wolf_armor_overlay"
+  }
+}
