@@ -1,21 +1,12 @@
 package io.github.itskilerluc.familiarfaces.server.networking;
 
 import io.github.itskilerluc.familiarfaces.server.capability.WolfArmorCapabilityProvider;
-import io.github.itskilerluc.familiarfaces.server.util.AdvancedExplosion;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Explosion;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class SyncWolfArmorPacket {
@@ -30,15 +21,15 @@ public class SyncWolfArmorPacket {
     }
 
     public SyncWolfArmorPacket(FriendlyByteBuf buffer) {
-       stack = buffer.readItem();
-       buffer.readInt();
-       buffer.readFloat();
+        stack = buffer.readItem();
+        entityId = buffer.readInt();
+        dropChance = buffer.readFloat();
     }
 
     public void write(FriendlyByteBuf buffer) {
-       buffer.writeItemStack(stack, false);
-       buffer.writeInt(entityId);
-       buffer.writeFloat(dropChance);
+        buffer.writeItemStack(stack, false);
+        buffer.writeInt(entityId);
+        buffer.writeFloat(dropChance);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {

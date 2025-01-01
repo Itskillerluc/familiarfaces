@@ -12,8 +12,8 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.PacketDistributor;
 
 public class WolfArmorUtils {
     public static boolean canArmorAbsorb(DamageSource damageSource, Wolf wolf) {
@@ -21,7 +21,7 @@ public class WolfArmorUtils {
     }
 
     public static boolean hasArmor(Wolf wolf) {
-        return getBodyArmorItem(wolf).getItem() != ItemRegistry.WOLF_ARMOR.get();
+        return getBodyArmorItem(wolf).getItem() == ItemRegistry.WOLF_ARMOR.get();
     }
 
     public static ItemStack getBodyArmorItem(Wolf wolf) {
@@ -34,7 +34,9 @@ public class WolfArmorUtils {
     public static void setBodyArmorItem(Wolf wolf, ItemStack stack) {
         wolf.getCapability(WolfArmorCapabilityProvider.WOLF_ARMOR_CAPABILITY).ifPresent(capability -> {
             capability.setBodyArmorItem(stack);
-            FamiliarFacesNetwork.CHANNEL.sendTo(new SyncWolfArmorPacket(capability.getBodyArmorItem(), capability.getBodyArmorDropChance(), wolf), wolf.getCommandSenderWorld().getServer().getPlayerList().getPlayer(wolf.getOwnerUUID()));
+            if (!wolf.level().isClientSide) {
+                FamiliarFacesNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> wolf), new SyncWolfArmorPacket(capability.getBodyArmorItem(), capability.getBodyArmorDropChance(), wolf));
+            }
         });
     }
 

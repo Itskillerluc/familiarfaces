@@ -54,26 +54,21 @@ public class WolfArmorLayer extends RenderLayer<Wolf, WolfModel<Wolf>> {
             float netHeadYaw,
             float headPitch
     ) {
-        if (WolfArmorUtils.hasArmor(livingEntity)) {
-            ItemStack itemstack = WolfArmorUtils.getBodyArmorItem(livingEntity);
-            if (itemstack.getItem() instanceof WolfArmor animalarmoritem) {
-                this.getParentModel().copyPropertiesTo(this.model);
-                this.model.prepareMobModel(livingEntity, limbSwing, limbSwingAmount, partialTick);
-                this.model.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-                VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(animalarmoritem.getTexture()));
-                this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
-                this.maybeRenderColoredLayer(poseStack, bufferSource, packedLight, itemstack, animalarmoritem);
-                this.maybeRenderCracks(poseStack, bufferSource, packedLight, itemstack);
-            }
+        ItemStack itemstack = WolfArmorUtils.getBodyArmorItem(livingEntity);
+        if (itemstack.getItem() instanceof WolfArmor animalarmoritem) {
+            this.getParentModel().copyPropertiesTo(this.model);
+            this.model.prepareMobModel(livingEntity, limbSwing, limbSwingAmount, partialTick);
+            this.model.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            VertexConsumer vertexconsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(animalarmoritem.getTexture()));
+            this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+            this.maybeRenderColoredLayer(poseStack, bufferSource, packedLight, itemstack, animalarmoritem);
+            this.maybeRenderCracks(poseStack, bufferSource, packedLight, itemstack);
         }
     }
 
     private void maybeRenderColoredLayer(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ItemStack armorStack, WolfArmor armorItem) {
         if (armorStack.is(ItemRegistry.WOLF_ARMOR.get())) {
             int i = ((DyeableLeatherItem) armorStack.getItem()).getColor(armorStack);
-            if (FastColor.ARGB32.alpha(i) == 0) {
-                return;
-            }
 
             ResourceLocation resourcelocation = armorItem.getOverlayTexture();
             if (resourcelocation == null) {
@@ -86,9 +81,9 @@ public class WolfArmorLayer extends RenderLayer<Wolf, WolfModel<Wolf>> {
                             buffer.getBuffer(RenderType.entityCutoutNoCull(resourcelocation)),
                             packedLight,
                             OverlayTexture.NO_OVERLAY,
-                            FastColor.ARGB32.red(i),
-                            FastColor.ARGB32.blue(i),
-                            FastColor.ARGB32.green(i),
+                            FastColor.ARGB32.red(i) / 255f,
+                            FastColor.ARGB32.green(i) / 255f,
+                            FastColor.ARGB32.blue(i) / 255f,
                             1);
         }
     }

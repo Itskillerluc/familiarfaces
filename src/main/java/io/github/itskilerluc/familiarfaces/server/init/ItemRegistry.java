@@ -28,12 +28,12 @@ public class ItemRegistry {
     public static final RegistryObject<Item> BREEZE_ROD = ITEMS.register("breeze_rod",
             () -> new Item(new Item.Properties()));
 
-    public static final RegistryObject<Item> ARMADILLO_SCUTE = ITEMS.register("armadillo_scute.json",
+    public static final RegistryObject<Item> ARMADILLO_SCUTE = ITEMS.register("armadillo_scute",
             () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<WolfArmor> WOLF_ARMOR = ITEMS.register("wolf_armor",
             () -> new WolfArmor(
-                    ArmorMaterials.ARMADILLO, true, new Item.Properties().durability(6)
+                    ArmorMaterials.ARMADILLO, true, new Item.Properties().durability(64)
             )
     );
 

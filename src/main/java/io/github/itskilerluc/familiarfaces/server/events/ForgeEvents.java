@@ -47,6 +47,7 @@ public class ForgeEvents {
                 itemstack.hurtAndBreak(Mth.ceil(event.getAmount()), wolf, (p_148282_) -> {
                     p_148282_.broadcastBreakEvent(EquipmentSlot.CHEST);
                 });
+                WolfArmorUtils.setBodyArmorItem(wolf, itemstack);
                 if (WolfCrackiness.WOLF_ARMOR.byDamage(i, j) != WolfCrackiness.WOLF_ARMOR.byDamage(WolfArmorUtils.getBodyArmorItem(wolf))) {
                     //todo this.playSound(SoundEvents.WOLF_ARMOR_CRACK);
                     if (event.getEntity().level() instanceof ServerLevel serverlevel) {
@@ -86,7 +87,7 @@ public class ForgeEvents {
                         p_148282_.broadcastBreakEvent(event.getHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                     });
                     //todo this.playSound(SoundEvents.ARMOR_UNEQUIP_WOLF);
-                    ItemStack itemstack1 = WolfArmorUtils.getBodyArmorItem(wolf)
+                    ItemStack itemstack1 = WolfArmorUtils.getBodyArmorItem(wolf);
                     WolfArmorUtils.setBodyArmorItem(wolf, ItemStack.EMPTY);
                     wolf.spawnAtLocation(itemstack1);
                     event.setCancellationResult(InteractionResult.SUCCESS);
