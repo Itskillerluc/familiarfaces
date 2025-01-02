@@ -1,6 +1,7 @@
 package io.github.itskilerluc.familiarfaces.server.items;
 
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -65,7 +66,7 @@ public class WolfArmor extends ArmorItem implements DyeableLeatherItem {
     }
 
     public static SoundEvent getBreakingSound() {
-        return SoundEvents.ITEM_BREAK;//todo SoundEvents.WOLF_ARMOR_BREAK);
+        return SoundEventRegistry.WOLF_ARMOR_BREAK.get();
     }
 
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pHand) {

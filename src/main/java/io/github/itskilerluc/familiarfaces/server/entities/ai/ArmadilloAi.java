@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;
 import io.github.itskilerluc.familiarfaces.server.entities.Armadillo;
-import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
-import io.github.itskilerluc.familiarfaces.server.init.MemoryModuleTypeRegistry;
-import io.github.itskilerluc.familiarfaces.server.init.SensorTypeRegistry;
-import io.github.itskilerluc.familiarfaces.server.init.Tags;
+import io.github.itskilerluc.familiarfaces.server.init.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.EntityType;
@@ -166,7 +163,7 @@ public class ArmadilloAi {
             if (owner.shouldSwitchToScaredState()) {
                 owner.switchToState(Armadillo.ArmadilloState.SCARED);
                 if (owner.onGround()) {
-                    // todo owner.playSound(SoundEvents.ARMADILLO_LAND);
+                    owner.playSound(SoundEventRegistry.ARMADILLO_LAND.get());
                 }
             } else {
                 Armadillo.ArmadilloState armadillo$armadillostate = owner.getState();
@@ -184,7 +181,7 @@ public class ArmadilloAi {
                     }
 
                     if (i < (long)Armadillo.ArmadilloState.UNROLLING.animationDuration()) {
-                        //todo owner.playSound(SoundEvents.ARMADILLO_UNROLL_START);
+                        owner.playSound(SoundEventRegistry.ARMADILLO_UNROLL_START.get());
                         owner.switchToState(Armadillo.ArmadilloState.UNROLLING);
                     }
                 } else if (armadillo$armadillostate == Armadillo.ArmadilloState.UNROLLING && i > (long)Armadillo.ArmadilloState.UNROLLING.animationDuration()) {

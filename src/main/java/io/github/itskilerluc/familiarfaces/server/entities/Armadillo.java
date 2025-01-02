@@ -2,9 +2,7 @@ package io.github.itskilerluc.familiarfaces.server.entities;
 
 import com.mojang.serialization.Dynamic;
 import io.github.itskilerluc.familiarfaces.server.entities.ai.ArmadilloAi;
-import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
-import io.github.itskilerluc.familiarfaces.server.init.MemoryModuleTypeRegistry;
-import io.github.itskilerluc.familiarfaces.server.init.Tags;
+import io.github.itskilerluc.familiarfaces.server.init.*;
 import io.github.itskilerluc.familiarfaces.server.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -14,6 +12,7 @@ import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -35,6 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -145,8 +145,8 @@ public class Armadillo extends Animal {
         ArmadilloAi.updateActivity(this);
         this.level().getProfiler().pop();
         if (this.isAlive() && !this.isBaby() && --this.scuteTime <= 0) {
-            //todo this.playSound(SoundEvents.ARMADILLO_SCUTE_DROP, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-            //todo this.spawnAtLocation(Items.ARMADILLO_SCUTE);
+            this.playSound(SoundEventRegistry.ARMADILLO_SCUTE_DROP.get(), 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+            this.spawnAtLocation(ItemRegistry.ARMADILLO_SCUTE.get());
             this.gameEvent(GameEvent.ENTITY_PLACE);
             this.scuteTime = this.pickNextScuteDropTime();
         }
@@ -223,7 +223,7 @@ public class Armadillo extends Animal {
     public void handleEntityEvent(byte id) {
         if (id == 64 && this.level().isClientSide) {
             this.peekReceivedClient = true;
-            //todo this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ARMADILLO_PEEK, this.getSoundSource(), 1.0F, 1.0F, false);
+            this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEventRegistry.ARMADILLO_PEEK.get(), this.getSoundSource(), 1.0F, 1.0F, false);
         } else {
             super.handleEntityEvent(id);
         }
@@ -274,7 +274,7 @@ public class Armadillo extends Animal {
         if (!this.isScared()) {
             this.stopInPlace();
             this.resetLove();
-            //todo this.makeSound(SoundEvents.ARMADILLO_ROLL);
+            this.playSound(SoundEventRegistry.ARMADILLO_ROLL.get());
             this.switchToState(Armadillo.ArmadilloState.ROLLING);
         }
     }
@@ -288,7 +288,7 @@ public class Armadillo extends Animal {
 
     public void rollOut() {
         if (this.isScared()) {
-            //todo this.makeSound(SoundEvents.ARMADILLO_UNROLL_FINISH);
+            this.playSound(SoundEventRegistry.ARMADILLO_UNROLL_FINISH.get());
             this.switchToState(Armadillo.ArmadilloState.IDLE);
         }
     }
@@ -338,7 +338,7 @@ public class Armadillo extends Animal {
     @Override
     public void ageUp(int amount, boolean forced) {
         if (this.isBaby() && forced) {
-            //todo this.makeSound(SoundEvents.ARMADILLO_EAT);
+            this.playSound(SoundEventRegistry.ARMADILLO_EAT.get());
         }
 
         super.ageUp(amount, forced);
@@ -348,9 +348,9 @@ public class Armadillo extends Animal {
         if (this.isBaby()) {
             return false;
         } else {
-            //todo this.spawnAtLocation(new ItemStack(Items.ARMADILLO_SCUTE));
+            this.spawnAtLocation(new ItemStack(ItemRegistry.ARMADILLO_SCUTE.get()));
             this.gameEvent(GameEvent.ENTITY_INTERACT);
-            //todo this.playSound(SoundEvents.ARMADILLO_BRUSH);
+            this.playSound(SoundEventRegistry.ARMADILLO_BRUSH.get());
             return true;
         }
     }
@@ -375,7 +375,7 @@ public class Armadillo extends Animal {
     @Override
     public void setInLove(@Nullable Player player) {
         super.setInLove(player);
-        //todo this.makeSound(SoundEvents.ARMADILLO_EAT);
+        this.playSound(SoundEventRegistry.ARMADILLO_EAT.get());
     }
 
     @Override
@@ -383,31 +383,31 @@ public class Armadillo extends Animal {
         return super.canFallInLove() && !this.isScared();
     }
 
-//todo
-//    @Override
-//    public SoundEvent getEatingSound(ItemStack stack) {
-//        return SoundEvents.ARMADILLO_EAT;
-//    }
-//todo
-//    @Override
-//    protected SoundEvent getAmbientSound() {
-//        return this.isScared() ? null : SoundEvents.ARMADILLO_AMBIENT;
-//    }
-//todo
-//    @Override
-//    protected SoundEvent getDeathSound() {
-//        return SoundEvents.ARMADILLO_DEATH;
-//    }
-//todo
-//    @Override
-//    protected SoundEvent getHurtSound(DamageSource damageSource) {
-//        return this.isScared() ? SoundEvents.ARMADILLO_HURT_REDUCED : SoundEvents.ARMADILLO_HURT;
-//    }
-//todo
-//    @Override
-//    protected void playStepSound(BlockPos pos, BlockState state) {
-//        this.playSound(SoundEvents.ARMADILLO_STEP, 0.15F, 1.0F);
-//    }
+
+    @Override
+    public SoundEvent getEatingSound(ItemStack stack) {
+        return SoundEventRegistry.ARMADILLO_EAT.get();
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return this.isScared() ? null : SoundEventRegistry.ARMADILLO_AMBIENT.get();
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEventRegistry.ARMADILLO_DEATH.get();
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return this.isScared() ? SoundEventRegistry.ARMADILLO_HURT_REDUCED.get() : SoundEventRegistry.ARMADILLO_HURT.get();
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pPos, BlockState pState) {
+        this.playSound(SoundEventRegistry.ARMADILLO_STEP.get(), 0.15F, 1.0F);
+    }
 
     @Override
     public int getMaxHeadYRot() {

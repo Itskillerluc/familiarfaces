@@ -5,6 +5,7 @@ import io.github.itskilerluc.familiarfaces.server.capability.WolfArmorCapability
 import io.github.itskilerluc.familiarfaces.server.entities.ai.WolfCrackiness;
 import io.github.itskilerluc.familiarfaces.server.init.ArmorMaterials;
 import io.github.itskilerluc.familiarfaces.server.init.ItemRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import io.github.itskilerluc.familiarfaces.server.networking.FamiliarFacesNetwork;
 import io.github.itskilerluc.familiarfaces.server.networking.SyncWolfArmorPacket;
 import io.github.itskilerluc.familiarfaces.server.util.Util;
@@ -49,7 +50,7 @@ public class ForgeEvents {
                 });
                 WolfArmorUtils.setBodyArmorItem(wolf, itemstack);
                 if (WolfCrackiness.WOLF_ARMOR.byDamage(i, j) != WolfCrackiness.WOLF_ARMOR.byDamage(WolfArmorUtils.getBodyArmorItem(wolf))) {
-                    //todo this.playSound(SoundEvents.WOLF_ARMOR_CRACK);
+                    wolf.playSound(SoundEventRegistry.WOLF_ARMOR_CRACK.get());
                     if (event.getEntity().level() instanceof ServerLevel serverlevel) {
                         serverlevel.sendParticles(
                                 new ItemParticleOption(ParticleTypes.ITEM, ItemRegistry.ARMADILLO_SCUTE.get().getDefaultInstance()),
@@ -86,7 +87,7 @@ public class ForgeEvents {
                     itemstack.hurtAndBreak(1, player, (p_148282_) -> {
                         p_148282_.broadcastBreakEvent(event.getHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
                     });
-                    //todo this.playSound(SoundEvents.ARMOR_UNEQUIP_WOLF);
+                    wolf.playSound(SoundEventRegistry.WOLF_ARMOR_UNEQUIP.get());
                     ItemStack itemstack1 = WolfArmorUtils.getBodyArmorItem(wolf);
                     WolfArmorUtils.setBodyArmorItem(wolf, ItemStack.EMPTY);
                     wolf.spawnAtLocation(itemstack1);
@@ -98,7 +99,7 @@ public class ForgeEvents {
                         && wolf.isOwnedBy(player)
                         && WolfArmorUtils.getBodyArmorItem(wolf).isDamaged()) {
                     itemstack.shrink(1);
-                    //todo this.playSound(SoundEvents.WOLF_ARMOR_REPAIR);
+                    wolf.playSound(SoundEventRegistry.WOLF_ARMOR_REPAIR.get());
                     ItemStack itemstack2 = WolfArmorUtils.getBodyArmorItem(wolf);
 
                     int i = (int) ((float) itemstack2.getMaxDamage() * 0.125F);

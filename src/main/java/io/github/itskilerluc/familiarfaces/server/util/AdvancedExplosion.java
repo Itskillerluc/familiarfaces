@@ -245,7 +245,6 @@ public class AdvancedExplosion extends Explosion {
             for (ServerPlayer serverPlayer : serverLevel.players()) {
                 if (serverPlayer.distanceToSqr(x, y, z) < 4096.0d) {
 
-                    //fixme also shows explosion particle
                     var knockback = explosion.getHitPlayers().get(serverPlayer);
                     FamiliarFacesNetwork.CHANNEL.sendTo(new CustomExplodePacket(x, y, z, radius, explosion.getToBlow(), knockback == null ? 0 : ((float) knockback.x), knockback == null ? 0 : ((float) knockback.y), knockback == null ? 0 : ((float) knockback.z), smallExplosionParticles, largeExplosionParticles, explosion$blockinteraction, Holder.direct(explosionSound)), serverPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
                 }

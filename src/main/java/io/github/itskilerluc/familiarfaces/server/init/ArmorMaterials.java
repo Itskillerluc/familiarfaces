@@ -18,7 +18,7 @@ public enum ArmorMaterials implements ArmorMaterial {
         p_323385_.put(ArmorItem.Type.LEGGINGS, 6);
         p_323385_.put(ArmorItem.Type.CHESTPLATE, 11);
         p_323385_.put(ArmorItem.Type.HELMET, 3);
-    }), 10, SoundEvents.ARMOR_EQUIP_TURTLE/*todo SoundEvents.ARMOR_EQUIP_WOLF*/, 0.0F, 0.0F, () -> Ingredient.of(ItemRegistry.ARMADILLO_SCUTE.get()));
+    }), 10, SoundEventRegistry.WOLF_ARMOR_EQUIP.get() , 0.0F, 0.0F, () -> Ingredient.of(ItemRegistry.ARMADILLO_SCUTE.get()));
 
     public static final StringRepresentable.EnumCodec<net.minecraft.world.item.ArmorMaterials> CODEC = StringRepresentable.fromEnum(net.minecraft.world.item.ArmorMaterials::values);
     private static final EnumMap<ArmorItem.Type, Integer> HEALTH_FUNCTION_FOR_TYPE = Util.make(new EnumMap<>(ArmorItem.Type.class), (p_266653_) -> {

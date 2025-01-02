@@ -53,4 +53,43 @@ public class SoundEventRegistry {
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.wind_charge.throw")));
     public static final RegistryObject<SoundEvent> WIND_CHARGE_BURST = SOUND_EVENTS.register("entity.wind_charge.wind_burst",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.wind_charge.wind_burst")));
+
+    public static final RegistryObject<SoundEvent> ARMADILLO_AMBIENT = SOUND_EVENTS.register("entity.armadillo.ambient",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.ambient")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_BRUSH = SOUND_EVENTS.register("entity.armadillo.brush",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.brush")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_DEATH = SOUND_EVENTS.register("entity.armadillo.death",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.death")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_EAT = SOUND_EVENTS.register("entity.armadillo.eat",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.eat")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_HURT = SOUND_EVENTS.register("entity.armadillo.hurt",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.hurt")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_HURT_REDUCED = SOUND_EVENTS.register("entity.armadillo.hurt_reduced",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.hurt_reduced")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_LAND = SOUND_EVENTS.register("entity.armadillo.land",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.land")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_PEEK = SOUND_EVENTS.register("entity.armadillo.peek",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.peek")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_ROLL = SOUND_EVENTS.register("entity.armadillo.roll",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.roll")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_SCUTE_DROP = SOUND_EVENTS.register("entity.armadillo.scute_drop",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.scute_drop")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_STEP = SOUND_EVENTS.register("entity.armadillo.step",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.step")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_UNROLL_FINISH = SOUND_EVENTS.register("entity.armadillo.unroll_finish",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.unroll_finish")));
+    public static final RegistryObject<SoundEvent> ARMADILLO_UNROLL_START = SOUND_EVENTS.register("entity.armadillo.unroll_start",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "entity.armadillo.unroll_start")));
+    public static final RegistryObject<SoundEvent> WOLF_ARMOR_BREAK = SOUND_EVENTS.register("item.wolf_armor.break",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "item.wolf_armor.break")));
+    public static final RegistryObject<SoundEvent> WOLF_ARMOR_CRACK = SOUND_EVENTS.register("item.wolf_armor.crack",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "item.wolf_armor.crack")));
+    public static final RegistryObject<SoundEvent> WOLF_ARMOR_DAMAGE = SOUND_EVENTS.register("item.wolf_armor.damage",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "item.wolf_armor.damage")));
+    public static final RegistryObject<SoundEvent> WOLF_ARMOR_REPAIR = SOUND_EVENTS.register("item.wolf_armor.repair",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "item.wolf_armor.repair")));
+    public static final RegistryObject<SoundEvent> WOLF_ARMOR_EQUIP = SOUND_EVENTS.register("item.armor.equip_wolf",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "item.armor.equip_wolf")));
+    public static final RegistryObject<SoundEvent> WOLF_ARMOR_UNEQUIP = SOUND_EVENTS.register("item.armor.unequip_wolf",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(FamiliarFaces.MODID, "item.armor.unequip_wolf")));
 }
