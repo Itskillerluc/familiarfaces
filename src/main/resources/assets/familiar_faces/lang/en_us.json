@@ -34,5 +34,19 @@
   "subtitles.item.wolf_armor.crack": "Wolf Armor cracks",
   "subtitles.item.wolf_armor.damage": "Wolf Armor takes damage",
   "subtitles.item.wolf_armor.repair": "Wolf Armor is repaired",
-  "item.familiar_faces.armadillo_scute": "Armadillo Scute"
+  "item.familiar_faces.armadillo_scute": "Armadillo Scute",
+  "subtitles.entity.armadillo.ambient": "Armadillo grunts",
+  "subtitles.entity.armadillo.brush": "Scute is brushed off",
+  "subtitles.entity.armadillo.death": "Armadillo dies",
+  "subtitles.entity.armadillo.eat": "Armadillo eats",
+  "subtitles.entity.armadillo.hurt": "Armadillo hurts",
+  "subtitles.entity.armadillo.hurt_reduced": "Armadillo shields itself",
+  "subtitles.entity.armadillo.land": "Armadillo lands",
+  "subtitles.entity.armadillo.peek": "Armadillo peeks",
+  "subtitles.entity.armadillo.roll": "Armadillo rolls up",
+  "subtitles.entity.armadillo.scute_drop": "Armadillo sheds scute",
+  "subtitles.entity.armadillo.unroll_finish": "Armadillo unrolls",
+  "subtitles.entity.armadillo.unroll_start": "Armadillo peeks",
+  "subtitles.item.armor.equip_wolf": "Wolf Armor is fastened",
+  "subtitles.item.armor.unequip_wolf": "Wolf Armor snips away"
 }

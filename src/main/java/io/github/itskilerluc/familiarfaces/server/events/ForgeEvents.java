@@ -13,11 +13,12 @@ import io.github.itskilerluc.familiarfaces.server.util.WolfArmorUtils;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
@@ -25,10 +26,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.ChunkEvent;
+import net.minecraftforge.event.level.ChunkWatchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.PacketDistributor;
 
 @Mod.EventBusSubscriber(modid = FamiliarFaces.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEvents {
@@ -79,34 +85,45 @@ public class ForgeEvents {
                 Util.consume(1, player, itemstack);
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
+                wolf.playSound(SoundEventRegistry.WOLF_ARMOR_EQUIP.get());
             } else if (itemstack.is(Items.SHEARS)
                     && wolf.isOwnedBy(player)
-                        && WolfArmorUtils.hasArmor(wolf)
-                        && (!EnchantmentHelper.hasBindingCurse(WolfArmorUtils.getBodyArmorItem(wolf)) || player.isCreative()))
-                {
-                    itemstack.hurtAndBreak(1, player, (p_148282_) -> {
-                        p_148282_.broadcastBreakEvent(event.getHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
-                    });
-                    wolf.playSound(SoundEventRegistry.WOLF_ARMOR_UNEQUIP.get());
-                    ItemStack itemstack1 = WolfArmorUtils.getBodyArmorItem(wolf);
-                    WolfArmorUtils.setBodyArmorItem(wolf, ItemStack.EMPTY);
-                    wolf.spawnAtLocation(itemstack1);
-                    event.setCancellationResult(InteractionResult.SUCCESS);
-                    event.setCanceled(true);
-                } else if (ArmorMaterials.ARMADILLO.getRepairIngredient().test(itemstack)
-                        && wolf.isInSittingPose()
-                        && WolfArmorUtils.hasArmor(wolf)
-                        && wolf.isOwnedBy(player)
-                        && WolfArmorUtils.getBodyArmorItem(wolf).isDamaged()) {
-                    itemstack.shrink(1);
-                    wolf.playSound(SoundEventRegistry.WOLF_ARMOR_REPAIR.get());
-                    ItemStack itemstack2 = WolfArmorUtils.getBodyArmorItem(wolf);
+                    && WolfArmorUtils.hasArmor(wolf)
+                    && (!EnchantmentHelper.hasBindingCurse(WolfArmorUtils.getBodyArmorItem(wolf)) || player.isCreative())) {
+                itemstack.hurtAndBreak(1, player, (p_148282_) -> {
+                    p_148282_.broadcastBreakEvent(event.getHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+                });
+                wolf.playSound(SoundEventRegistry.WOLF_ARMOR_UNEQUIP.get());
+                ItemStack itemstack1 = WolfArmorUtils.getBodyArmorItem(wolf);
+                WolfArmorUtils.setBodyArmorItem(wolf, ItemStack.EMPTY);
+                wolf.spawnAtLocation(itemstack1);
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
+            } else if (ArmorMaterials.ARMADILLO.getRepairIngredient().test(itemstack)
+                    && wolf.isInSittingPose()
+                    && WolfArmorUtils.hasArmor(wolf)
+                    && wolf.isOwnedBy(player)
+                    && WolfArmorUtils.getBodyArmorItem(wolf).isDamaged()) {
+                itemstack.shrink(1);
+                wolf.playSound(SoundEventRegistry.WOLF_ARMOR_REPAIR.get());
+                ItemStack itemstack2 = WolfArmorUtils.getBodyArmorItem(wolf);
 
-                    int i = (int) ((float) itemstack2.getMaxDamage() * 0.125F);
-                    itemstack2.setDamageValue(Math.max(0, itemstack2.getDamageValue() - i));
-                    event.setCancellationResult(InteractionResult.SUCCESS);
-                    event.setCanceled(true);
-                }
+                int i = (int) ((float) itemstack2.getMaxDamage() * 0.125F);
+                itemstack2.setDamageValue(Math.max(0, itemstack2.getDamageValue() - i));
+                event.setCancellationResult(InteractionResult.SUCCESS);
+                event.setCanceled(true);
             }
         }
     }
+    @SubscribeEvent
+    public static void onPlayerJoin(final PlayerEvent.StartTracking event) {
+        if (event.getTarget() instanceof Wolf wolf) {
+            wolf.getCapability(WolfArmorCapabilityProvider.WOLF_ARMOR_CAPABILITY).ifPresent((capability) -> {
+                FamiliarFacesNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> ((ServerPlayer) event.getEntity())), new SyncWolfArmorPacket(capability.getBodyArmorItem(), capability.getBodyArmorDropChance(), wolf));
+            });
+        }
+    }
+}
+
+
+
