@@ -2,9 +2,12 @@ package io.github.itskilerluc.familiarfaces.server.events;
 
 import io.github.itskilerluc.familiarfaces.FamiliarFaces;
 import io.github.itskilerluc.familiarfaces.server.capability.WolfArmorCapabilityProvider;
+import io.github.itskilerluc.familiarfaces.server.config.Config;
+import io.github.itskilerluc.familiarfaces.server.entities.Armadillo;
 import io.github.itskilerluc.familiarfaces.server.entities.ai.WolfCrackiness;
 import io.github.itskilerluc.familiarfaces.server.init.ArmorMaterials;
 import io.github.itskilerluc.familiarfaces.server.init.ItemRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.MobEffectRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import io.github.itskilerluc.familiarfaces.server.networking.FamiliarFacesNetwork;
 import io.github.itskilerluc.familiarfaces.server.networking.SyncWolfArmorPacket;
@@ -17,9 +20,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +32,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ChunkEvent;
@@ -77,7 +83,16 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void interactionEvent(final PlayerInteractEvent.EntityInteract event) {
-        if (event.getTarget() instanceof Wolf wolf) {
+        if (event.getTarget() instanceof Armadillo) {
+            if (event.getItemStack().is(Items.BRUSH)) {
+                if (!event.getEntity().getCooldowns().isOnCooldown(Items.BRUSH)) {
+                    event.getEntity().getCooldowns().addCooldown(Items.BRUSH, Config.Server.brushingCooldown.get());
+                } else {
+                    event.setCancellationResult(InteractionResult.FAIL);
+                    event.setCanceled(true);
+                }
+            }
+        } else if (event.getTarget() instanceof Wolf wolf) {
             ItemStack itemstack = event.getItemStack();
             Player player = event.getEntity();
             if (itemstack.is(ItemRegistry.WOLF_ARMOR.get()) && wolf.isOwnedBy(player) && WolfArmorUtils.getBodyArmorItem(wolf).isEmpty() && !wolf.isBaby()) {
@@ -121,6 +136,47 @@ public class ForgeEvents {
             wolf.getCapability(WolfArmorCapabilityProvider.WOLF_ARMOR_CAPABILITY).ifPresent((capability) -> {
                 FamiliarFacesNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> ((ServerPlayer) event.getEntity())), new SyncWolfArmorPacket(capability.getBodyArmorItem(), capability.getBodyArmorDropChance(), wolf));
             });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobRemoved(final LivingDeathEvent event) {
+        for (MobEffectInstance activeEffect : event.getEntity().getActiveEffects()) {
+            if (activeEffect.getEffect() == MobEffectRegistry.WEAVING.get()) {
+                MobEffectRegistry.WEAVING.get().onMobRemoved(event.getEntity(), activeEffect.getAmplifier(), Entity.RemovalReason.KILLED);
+            }
+            if (activeEffect.getEffect() == MobEffectRegistry.OOZING.get()) {
+                MobEffectRegistry.OOZING.get().onMobRemoved(event.getEntity(), activeEffect.getAmplifier(), Entity.RemovalReason.KILLED);
+            }
+            if (activeEffect.getEffect() == MobEffectRegistry.WIND_CHARGED.get()) {
+                MobEffectRegistry.WIND_CHARGED.get().onMobRemoved(event.getEntity(), activeEffect.getAmplifier(), Entity.RemovalReason.KILLED);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMobHurt(final LivingHurtEvent event) {
+        for (MobEffectInstance activeEffect : event.getEntity().getActiveEffects()) {
+            if (activeEffect.getEffect() == MobEffectRegistry.INFESTED.get()) {
+                MobEffectRegistry.INFESTED.get().onMobHurt(event.getEntity(), activeEffect.getAmplifier(), event.getSource(), event.getAmount());
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void entityDropLoot(final LivingDropsEvent event) {
+        if (event.getEntity() instanceof Wolf wolf) {
+            ItemStack itemstack = WolfArmorUtils.getBodyArmorItem(wolf);
+            float f = WolfArmorUtils.getBodyArmorDropChance(wolf);
+            boolean flag = f > 1.0F;
+            if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && (event.isRecentlyHit() | flag) && Math.max(wolf.getRandom().nextFloat() - (float)event.getLootingLevel() * 0.01F, 0.0F) < f) {
+                if (!flag && itemstack.isDamageableItem()) {
+                    itemstack.setDamageValue(itemstack.getMaxDamage() - wolf.getRandom().nextInt(1 + wolf.getRandom().nextInt(Math.max(itemstack.getMaxDamage() - 3, 1))));
+                }
+
+                wolf.spawnAtLocation(itemstack);
+                WolfArmorUtils.setBodyArmorItem(wolf, ItemStack.EMPTY);
+            }
         }
     }
 }

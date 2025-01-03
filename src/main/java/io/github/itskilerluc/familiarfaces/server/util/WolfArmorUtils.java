@@ -31,9 +31,21 @@ public class WolfArmorUtils {
         return ItemStack.EMPTY;
     }
 
+    public static float getBodyArmorDropChance(Wolf wolf) {
+        if (wolf.getCapability(WolfArmorCapabilityProvider.WOLF_ARMOR_CAPABILITY).isPresent()) {
+            return wolf.getCapability(WolfArmorCapabilityProvider.WOLF_ARMOR_CAPABILITY).orElseThrow(NullPointerException::new).getBodyArmorDropChance();
+        }
+        return 0;
+    }
+
     public static void setBodyArmorItem(Wolf wolf, ItemStack stack) {
         wolf.getCapability(WolfArmorCapabilityProvider.WOLF_ARMOR_CAPABILITY).ifPresent(capability -> {
             capability.setBodyArmorItem(stack);
+            if (!stack.isEmpty()) {
+                capability.setBodyArmorDropChance(2f);
+            } else {
+                capability.setBodyArmorDropChance(0f);
+            }
             if (!wolf.level().isClientSide) {
                 FamiliarFacesNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> wolf), new SyncWolfArmorPacket(capability.getBodyArmorItem(), capability.getBodyArmorDropChance(), wolf));
             }

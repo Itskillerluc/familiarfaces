@@ -85,12 +85,12 @@
     "sounds": [
       "familiar_faces:breeze_inhale1",
       {
-        "name": "breeze_inhale1",
+        "name": "familiar_faces:breeze_inhale1",
         "pitch": 1.1
       },
       "familiar_faces:breeze_inhale2",
       {
-        "name": "breeze_inhale2",
+        "name": "familiar_faces:breeze_inhale2",
         "pitch": 1.1
       }
     ],
@@ -114,11 +114,11 @@
     "sounds": [
       "familiar_faces:breeze_shoot",
       {
-        "name": "breeze_shoot",
+        "name": "familiar_faces:breeze_shoot",
         "pitch": 1.1
       },
       {
-        "name": "breeze_shoot",
+        "name": "familiar_faces:breeze_shoot",
         "pitch": 1.2
       }
     ],
@@ -142,15 +142,15 @@
   "entity.breeze.wind_burst": {
     "sounds": [
       {
-        "name": "wind_burst_1",
+        "name": "familiar_faces:wind_burst_1",
         "pitch": 1.2
       },
       {
-        "name": "wind_burst_2",
+        "name": "familiar_faces:wind_burst_2",
         "pitch": 1.2
       },
       {
-        "name": "wind_burst_3",
+        "name": "familiar_faces:wind_burst_3",
         "pitch": 1.2
       }
     ],

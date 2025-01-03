@@ -4,7 +4,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class WolfArmorCapability implements IWolfArmorCapability {
     private ItemStack bodyArmorItem = ItemStack.EMPTY;
-    private float bodyArmorDropChance;
+    private float bodyArmorDropChance = 0.085f;
 
     @Override
     public ItemStack getBodyArmorItem() {

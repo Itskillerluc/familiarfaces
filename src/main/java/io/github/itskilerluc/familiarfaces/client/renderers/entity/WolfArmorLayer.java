@@ -63,7 +63,14 @@ public class WolfArmorLayer extends RenderLayer<Wolf, WolfModel<Wolf>> {
             this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
             this.maybeRenderColoredLayer(poseStack, bufferSource, packedLight, itemstack, animalarmoritem);
             this.maybeRenderCracks(poseStack, bufferSource, packedLight, itemstack);
+            if (itemstack.hasFoil()) {
+                renderGlint(poseStack, bufferSource, packedLight, this.model);
+            }
         }
+    }
+
+    private void renderGlint(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, net.minecraft.client.model.Model pModel) {
+        pModel.renderToBuffer(pPoseStack, pBuffer.getBuffer(RenderType.entityGlint()), pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private void maybeRenderColoredLayer(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ItemStack armorStack, WolfArmor armorItem) {

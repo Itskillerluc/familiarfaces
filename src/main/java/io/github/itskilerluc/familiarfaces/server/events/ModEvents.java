@@ -7,6 +7,7 @@ import io.github.itskilerluc.familiarfaces.server.entities.Bogged;
 import io.github.itskilerluc.familiarfaces.server.entities.Breeze;
 import io.github.itskilerluc.familiarfaces.server.init.EntityTypeRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.ItemRegistry;
+import io.github.itskilerluc.familiarfaces.server.init.PotionRegistry;
 import io.github.itskilerluc.familiarfaces.server.networking.FamiliarFacesNetwork;
 import net.minecraft.core.Position;
 import net.minecraft.core.cauldron.CauldronInteraction;
@@ -16,10 +17,17 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.common.brewing.BrewingRecipe;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -73,6 +81,15 @@ public class ModEvents {
 
         event.enqueueWork(() -> {
             CauldronInteraction.WATER.put(ItemRegistry.WOLF_ARMOR.get(), CauldronInteraction.DYED_ITEM);
+
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), Ingredient.of(ItemRegistry.BREEZE_ROD.get()), PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.MUNDANE));
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)), Ingredient.of(ItemRegistry.BREEZE_ROD.get()), PotionUtils.setPotion(new ItemStack(Items.POTION), PotionRegistry.WIND_CHARGED.get()));
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), Ingredient.of(Items.SLIME_BLOCK), PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.MUNDANE));
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)), Ingredient.of(Items.SLIME_BLOCK), PotionUtils.setPotion(new ItemStack(Items.POTION), PotionRegistry.OOZING.get()));
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), Ingredient.of(Items.STONE), PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.MUNDANE));
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)), Ingredient.of(Items.STONE), PotionUtils.setPotion(new ItemStack(Items.POTION), PotionRegistry.INFESTED.get()));
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER)), Ingredient.of(Items.COBWEB), PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.MUNDANE));
+            BrewingRecipeRegistry.addRecipe(Ingredient.of(PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.AWKWARD)), Ingredient.of(Items.COBWEB), PotionUtils.setPotion(new ItemStack(Items.POTION), PotionRegistry.WEAVING.get()));
         });
     }
 
