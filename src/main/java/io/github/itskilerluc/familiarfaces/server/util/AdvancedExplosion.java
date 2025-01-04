@@ -10,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -29,12 +28,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseFireBlock;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
@@ -43,7 +43,10 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.NetworkDirection;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
 
 public class AdvancedExplosion extends Explosion {
     public static final SimpleExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(true, true, Optional.empty(), Optional.empty());
@@ -56,6 +59,7 @@ public class AdvancedExplosion extends Explosion {
     private final SimpleExplosionDamageCalculator damageCalculator;
     private final boolean fire;
     private final BlockInteraction blockInteraction;
+    public boolean interact = false;
 
     public AdvancedExplosion(Level pLevel, @Nullable Entity pSource, double pToBlowX, double pToBlowY, double pToBlowZ, float pRadius, List<BlockPos> pPositions) {
         super(pLevel, pSource, pToBlowX, pToBlowY, pToBlowZ, pRadius, pPositions);
@@ -163,12 +167,12 @@ public class AdvancedExplosion extends Explosion {
         } else if (source instanceof PrimedTnt primedtnt) {
             return primedtnt.getOwner();
         } else if (source instanceof LivingEntity) {
-            return (LivingEntity)source;
+            return (LivingEntity) source;
         } else {
             if (source instanceof Projectile projectile) {
                 Entity entity = projectile.getOwner();
                 if (entity instanceof LivingEntity) {
-                    return (LivingEntity)entity;
+                    return (LivingEntity) entity;
                 }
             }
 
@@ -208,7 +212,8 @@ public class AdvancedExplosion extends Explosion {
             boolean spawnParticles,
             ParticleOptions smallExplosionParticles,
             ParticleOptions largeExplosionParticles,
-            SoundEvent explosionSound
+            SoundEvent explosionSound,
+            boolean interaction
     ) {
         BlockInteraction explosion$blockinteraction = switch (explosionInteraction) {
             case NONE -> BlockInteraction.KEEP;
@@ -233,6 +238,8 @@ public class AdvancedExplosion extends Explosion {
                 largeExplosionParticles,
                 explosionSound
         );
+
+        explosion.interact = interaction;
         if (ForgeEventFactory.onExplosionStart(level, explosion)) return explosion;
         explosion.explode();
         explosion.finalizeExplosion(spawnParticles);
@@ -246,13 +253,14 @@ public class AdvancedExplosion extends Explosion {
                 if (serverPlayer.distanceToSqr(x, y, z) < 4096.0d) {
 
                     var knockback = explosion.getHitPlayers().get(serverPlayer);
-                    FamiliarFacesNetwork.CHANNEL.sendTo(new CustomExplodePacket(x, y, z, radius, explosion.getToBlow(), knockback == null ? 0 : ((float) knockback.x), knockback == null ? 0 : ((float) knockback.y), knockback == null ? 0 : ((float) knockback.z), smallExplosionParticles, largeExplosionParticles, explosion$blockinteraction, Holder.direct(explosionSound)), serverPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+                    FamiliarFacesNetwork.CHANNEL.sendTo(new CustomExplodePacket(x, y, z, radius, explosion.getToBlow(), knockback == null ? 0 : ((float) knockback.x), knockback == null ? 0 : ((float) knockback.y), knockback == null ? 0 : ((float) knockback.z), smallExplosionParticles, largeExplosionParticles, explosion$blockinteraction, Holder.direct(explosionSound), interaction), serverPlayer.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
                 }
             }
         }
 
         return explosion;
     }
+
 
     public void explode() {
         level.gameEvent(getDirectSourceEntity(), GameEvent.EXPLODE, new Vec3(getPosition().x, getPosition().y, getPosition().z));
@@ -387,25 +395,77 @@ public class AdvancedExplosion extends Explosion {
 
             for (BlockPos blockpos : this.getToBlow()) {
                 BlockState blockstate = this.level.getBlockState(blockpos);
-                if (!blockstate.isAir()) {
-                    BlockPos blockpos1 = blockpos.immutable();
-                    this.level.getProfiler().push("explosion_blocks");
-                    if (blockstate.canDropFromExplosion(this.level, blockpos, this)) {
-                        if (this.level instanceof ServerLevel serverlevel) {
-                            BlockEntity blockentity = blockstate.hasBlockEntity() ? this.level.getBlockEntity(blockpos) : null;
-                            LootParams.Builder lootparams$builder = (new LootParams.Builder(serverlevel)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockpos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockentity).withOptionalParameter(LootContextParams.THIS_ENTITY, getDirectSourceEntity());
-                            if (this.blockInteraction == BlockInteraction.DESTROY_WITH_DECAY) {
-                                lootparams$builder.withParameter(LootContextParams.EXPLOSION_RADIUS, this.radius);
-                            }
-                            boolean flag1 = this.getIndirectSourceEntity() instanceof Player;
+                if (!interact) {
+                    if (!blockstate.isAir()) {
+                        BlockPos blockpos1 = blockpos.immutable();
+                        this.level.getProfiler().push("explosion_blocks");
+                        if (blockstate.canDropFromExplosion(this.level, blockpos, this)) {
+                            if (this.level instanceof ServerLevel serverlevel) {
+                                BlockEntity blockentity = blockstate.hasBlockEntity() ? this.level.getBlockEntity(blockpos) : null;
+                                LootParams.Builder lootparams$builder = (new LootParams.Builder(serverlevel)).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockpos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockentity).withOptionalParameter(LootContextParams.THIS_ENTITY, getDirectSourceEntity());
+                                if (this.blockInteraction == BlockInteraction.DESTROY_WITH_DECAY) {
+                                    lootparams$builder.withParameter(LootContextParams.EXPLOSION_RADIUS, this.radius);
+                                }
+                                boolean flag1 = this.getIndirectSourceEntity() instanceof Player;
 
-                            blockstate.spawnAfterBreak(serverlevel, blockpos, ItemStack.EMPTY, flag1);
-                            blockstate.getDrops(lootparams$builder).forEach(p_46074_ -> addBlockDrops(objectarraylist, p_46074_, blockpos1));
+                                blockstate.spawnAfterBreak(serverlevel, blockpos, ItemStack.EMPTY, flag1);
+                                blockstate.getDrops(lootparams$builder).forEach(p_46074_ -> addBlockDrops(objectarraylist, p_46074_, blockpos1));
+                            }
+                        }
+
+                        blockstate.onBlockExploded(this.level, blockpos, this);
+                        this.level.getProfiler().pop();
+                    }
+                } else {
+                    if (blockstate.getBlock() instanceof AbstractCandleBlock) {
+                        if (interact && blockstate.getValue(AbstractCandleBlock.LIT)) {
+                            AbstractCandleBlock.extinguish(null, blockstate, this.level, blockpos);
+                        }
+                    } else if (blockstate.getBlock() instanceof BellBlock bell) {
+                        if (interact) {
+                            bell.attemptToRing(level, blockpos, null);
+                        }
+                    } else if (blockstate.getBlock() instanceof ButtonBlock button) {
+                        if (interact && !blockstate.getValue(ButtonBlock.POWERED)) {
+                            button.press(blockstate, level, blockpos);
+                        }
+                    } else if (blockstate.getBlock() instanceof DoorBlock door) {
+                        if (this.interact
+                                && blockstate.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER
+                                && door.type().canOpenByHand()
+                                && !blockstate.getValue(DoorBlock.POWERED)) {
+                            door.setOpen(null, level, blockstate, blockpos, !door.isOpen(blockstate));
+                        }
+                    } else if (blockstate.getBlock() instanceof FenceGateBlock gate) {
+                        if (interact && !blockstate.getValue(FenceGateBlock.POWERED)) {
+                            boolean f = blockstate.getValue(FenceGateBlock.OPEN);
+                            level.setBlockAndUpdate(blockpos, blockstate.setValue(FenceGateBlock.OPEN, !flag));
+                            level.playSound(
+                                    null,
+                                    blockpos,
+                                    f ? ((FenceGateBlockMixinHelper) gate).familiar_face$closeSound() : ((FenceGateBlockMixinHelper) gate).familiar_face$openSound(),
+                                    SoundSource.BLOCKS,
+                                    1.0F,
+                                    level.getRandom().nextFloat() * 0.1F + 0.9F
+                            );
+                            level.gameEvent(f ? GameEvent.BLOCK_CLOSE : GameEvent.BLOCK_OPEN, blockpos, GameEvent.Context.of(blockstate));
+                        }
+                    } else if (blockstate.getBlock() instanceof LeverBlock lever) {
+                        if (interact) {
+                            lever.pull(blockstate, level, blockpos);
+                        }
+                    } else if (blockstate.getBlock() instanceof TrapDoorBlock trapdoor) {
+                        if (interact && trapdoor.type.canOpenByHand() && !blockstate.getValue(TrapDoorBlock.POWERED)) {
+                            BlockState blockstate1 = blockstate.cycle(TrapDoorBlock.OPEN);
+                            level.setBlock(blockpos, blockstate1, 2);
+                            if (blockstate1.getValue(TrapDoorBlock.WATERLOGGED)) {
+                                level.scheduleTick(blockpos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+                            }
+
+                            level.playSound(null, blockpos, blockstate1.<Boolean>getValue(TrapDoorBlock.OPEN) ? trapdoor.type.trapdoorOpen() : trapdoor.type.trapdoorClose(), SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
+                            level.gameEvent(null, blockstate1.<Boolean>getValue(TrapDoorBlock.OPEN) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, blockpos);
                         }
                     }
-
-                    blockstate.onBlockExploded(this.level, blockpos, this);
-                    this.level.getProfiler().pop();
                 }
             }
 

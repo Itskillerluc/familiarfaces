@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -35,11 +36,12 @@ public class BreezeWindCharge extends AbstractWindCharge {
                 pos.z(),
                 3.0F,
                 false,
-                Level.ExplosionInteraction.NONE,
+                Level.ExplosionInteraction.MOB,
                 true,
                 ParticleTypeRegistry.GUST_EMITTER_SMALL.get(),
                 ParticleTypeRegistry.GUST_EMITTER_LARGE.get(),
-                SoundEventRegistry.BREEZE_WIND_CHARGE_BURST.get()
+                SoundEventRegistry.BREEZE_WIND_CHARGE_BURST.get(),
+                true
         );
     }
 

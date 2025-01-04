@@ -14,10 +14,8 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -145,7 +143,7 @@ public class Breeze extends Monster {
             case SLIDING:
                 this.emitGroundParticles(20);
                 break;
-            default:
+            case NONE:
                 switch (getPose()) {
                     case STANDING:
                         this.resetJumpTrail().emitGroundParticles(1 + this.getRandom().nextInt(1));
@@ -229,7 +227,10 @@ public class Breeze extends Monster {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return this.onGround() ? SoundEventRegistry.BREEZE_IDLE_GROUND.get() : SoundEventRegistry.BREEZE_IDLE_AIR.get();
+        if (getTarget() == null || !this.onGround()) {
+            return this.onGround() ? SoundEventRegistry.BREEZE_IDLE_GROUND.get() : SoundEventRegistry.BREEZE_IDLE_AIR.get();
+        }
+        return null;
     }
 
     public Optional<LivingEntity> getHurtBy() {

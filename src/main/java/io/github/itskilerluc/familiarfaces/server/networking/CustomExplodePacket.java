@@ -30,12 +30,13 @@ public final class CustomExplodePacket {
     private final ParticleOptions largeExplosionParticles;
     private final Explosion.BlockInteraction blockInteraction;
     private final Holder<SoundEvent> explosionSound;
+    private final boolean interact;
 
 
     public CustomExplodePacket(double x, double y, double z, float power, List<BlockPos> toBlow, float knockbackX,
                                float knockbackY, float knockbackZ, ParticleOptions smallExplosionParticles,
                                ParticleOptions largeExplosionParticles, Explosion.BlockInteraction blockInteraction,
-                               Holder<SoundEvent> explosionSound) {
+                               Holder<SoundEvent> explosionSound, boolean interact) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -48,6 +49,7 @@ public final class CustomExplodePacket {
         this.largeExplosionParticles = largeExplosionParticles;
         this.blockInteraction = blockInteraction;
         this.explosionSound = explosionSound;
+        this.interact = interact;
     }
 
     public CustomExplodePacket(FriendlyByteBuf buffer) {
@@ -71,6 +73,7 @@ public final class CustomExplodePacket {
         this.largeExplosionParticles = ParticleTypes.CODEC.parse(NbtOps.INSTANCE, buffer.readNbt()).result().orElse(ParticleTypes.EXPLOSION);
         this.blockInteraction = buffer.readEnum(Explosion.BlockInteraction.class);
         this.explosionSound = SoundEvent.CODEC.parse(NbtOps.INSTANCE, buffer.readNbt()).result().orElse(null);
+        this.interact = buffer.readBoolean();
     }
 
     public void write(FriendlyByteBuf buffer) {
@@ -90,11 +93,13 @@ public final class CustomExplodePacket {
         buffer.writeNbt((CompoundTag) ParticleTypes.CODEC.encodeStart(NbtOps.INSTANCE, largeExplosionParticles).result().orElse(NbtOps.INSTANCE.empty()));
         buffer.writeEnum(blockInteraction);
         buffer.writeNbt((CompoundTag) SoundEvent.CODEC.encodeStart(NbtOps.INSTANCE, explosionSound).result().orElse(NbtOps.INSTANCE.empty()));
+        buffer.writeBoolean(interact);
     }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
         if (Minecraft.getInstance().level == null || Minecraft.getInstance().player == null) return;
         AdvancedExplosion explosion = new AdvancedExplosion(Minecraft.getInstance().level, null, x, y, z, power, toBlow, blockInteraction, smallExplosionParticles, largeExplosionParticles, explosionSound);
+        explosion.interact = this.interact;
         explosion.finalizeExplosion(true);
         Minecraft.getInstance().player.setDeltaMovement(Minecraft.getInstance().player.getDeltaMovement().add(knockbackX, knockbackY, knockbackZ));
     }

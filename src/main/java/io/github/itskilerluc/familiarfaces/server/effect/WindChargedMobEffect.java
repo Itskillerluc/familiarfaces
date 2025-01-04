@@ -38,7 +38,8 @@ public class WindChargedMobEffect extends MobEffect {
                     true,
                     ParticleTypeRegistry.GUST_EMITTER_SMALL.get(),
                     ParticleTypeRegistry.GUST_EMITTER_LARGE.get(),
-                    SoundEventRegistry.BREEZE_WIND_CHARGE_BURST.get()
+                    SoundEventRegistry.BREEZE_WIND_CHARGE_BURST.get(),
+                    true
             );
         }
     }

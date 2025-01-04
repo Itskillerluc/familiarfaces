@@ -7,9 +7,7 @@ import io.github.itskilerluc.familiarfaces.server.init.SoundEventRegistry;
 import io.github.itskilerluc.familiarfaces.server.init.Tags;
 import io.github.itskilerluc.familiarfaces.server.util.AdvancedExplosion;
 import io.github.itskilerluc.familiarfaces.server.util.SimpleExplosionDamageCalculator;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -69,11 +67,12 @@ public class WindCharge extends AbstractWindCharge {
                 pos.z(),
                 RADIUS,
                 false,
-                Level.ExplosionInteraction.NONE,
+                Level.ExplosionInteraction.MOB,
                 true,
                 ParticleTypeRegistry.GUST_EMITTER_SMALL.get(),
                 ParticleTypeRegistry.GUST_EMITTER_LARGE.get(),
-                SoundEventRegistry.WIND_CHARGE_BURST.get()
+                SoundEventRegistry.WIND_CHARGE_BURST.get(),
+                true
         );
     }
 

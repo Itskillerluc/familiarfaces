@@ -106,7 +106,7 @@ public class LongJump extends Behavior<Breeze> {
     }
 
     protected boolean canStillUse(ServerLevel level, Breeze entity, long gameTime) {
-        return entity.getPose() != Pose.STANDING && !entity.getBrain().hasMemoryValue(MemoryModuleTypeRegistry.BREEZE_JUMP_COOLDOWN.get());
+        return (entity.getExtraPose() != ExtraPose.NONE || entity.getPose() != Pose.STANDING) && !entity.getBrain().hasMemoryValue(MemoryModuleTypeRegistry.BREEZE_JUMP_COOLDOWN.get());
     }
 
     protected void start(ServerLevel level, Breeze entity, long gameTime) {
@@ -143,6 +143,7 @@ public class LongJump extends Behavior<Breeze> {
 
             owner.playSound(SoundEventRegistry.BREEZE_JUMP.get(), 1.0F, 1.0F);
             owner.setPose(Pose.LONG_JUMPING);
+            owner.setExtraPose(ExtraPose.NONE);
             owner.setYRot(owner.yBodyRot);
             owner.setDiscardFriction(true);
             owner.setDeltaMovement(vec3);

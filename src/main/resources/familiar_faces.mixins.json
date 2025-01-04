@@ -7,6 +7,7 @@
   "refmap": "familiar_faces.refmap.json",
   "mixins": [
     "EnchantmentMixin",
+    "FenceGateBlockMixin",
     "PetEnchantmentMixin",
     "TameableUtilsMixin",
     "WolfMixin"
