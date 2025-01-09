@@ -3,7 +3,7 @@
   "category": "equipment",
   "key": {
     "X": {
-      "item": "minecraft:armadillo_scute"
+      "item": "familiar_faces:armadillo_scute"
     }
   },
   "pattern": [
@@ -13,6 +13,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "minecraft:wolf_armor"
+    "item": "familiar_faces:wolf_armor"
   }
 }

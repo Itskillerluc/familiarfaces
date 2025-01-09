@@ -75,6 +75,9 @@ public class WolfArmorLayer extends RenderLayer<Wolf, WolfModel<Wolf>> {
 
     private void maybeRenderColoredLayer(PoseStack poseStack, MultiBufferSource buffer, int packedLight, ItemStack armorStack, WolfArmor armorItem) {
         if (armorStack.is(ItemRegistry.WOLF_ARMOR.get())) {
+            if (!armorStack.hasTag() || !armorStack.getTag().contains("display", 10) || !armorStack.getTag().getCompound("display").contains("color", 3)) {
+                return;
+            }
             int i = ((DyeableLeatherItem) armorStack.getItem()).getColor(armorStack);
 
             ResourceLocation resourcelocation = armorItem.getOverlayTexture();
