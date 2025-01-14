@@ -30,6 +30,7 @@ import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BrushItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -326,7 +327,7 @@ public class Armadillo extends Animal {
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack itemstack = player.getItemInHand(hand);
-        if (itemstack.is(Items.BRUSH) && this.brushOffScute()) {
+        if (itemstack.getItem() instanceof BrushItem && this.brushOffScute()) {
             itemstack.hurtAndBreak(16, player, e -> {
             });
             return InteractionResult.sidedSuccess(this.level().isClientSide);
