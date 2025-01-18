@@ -172,10 +172,8 @@ dependencies {
     // The group id is ignored when searching -- in this case, it is "blank"
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
-    compileOnly fg.deobf("curse.maven:domestication-innovation-591149:4911955")
+    implementation fg.deobf("curse.maven:domestication-innovation-591149:4911955")
     implementation fg.deobf("curse.maven:citadel-331936:6002521")
-    runtimeOnly fg.deobf("curse.maven:quark-243121:5594847")
-    runtimeOnly fg.deobf("curse.maven:zeta-968868:5597406")
 
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
