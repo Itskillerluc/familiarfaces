@@ -1,8 +1,8 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.itskilerluc.familiarfaces.mixin",
-  "plugin": "io.github.itskilerluc.familiarfaces.mixin.ModLoadedPlugin",
+  "package": "io.github.itskillerluc.familiarfaces.mixin",
+  "plugin": "io.github.itskillerluc.familiarfaces.mixin.ModLoadedPlugin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "familiar_faces.refmap.json",
   "mixins": [
