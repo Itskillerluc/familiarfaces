@@ -51,7 +51,7 @@ public class WindChargeRenderer extends EntityRenderer<AbstractWindCharge> {
     public static RenderType breezeWind(ResourceLocation location, float u, float v) {
         return new RenderType.CompositeRenderType("breeze_wind", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, false, true,
                 RenderType.CompositeState.builder()
-                        .setShaderState(RENDERTYPE_BREEZE_WIND_SHADER)
+                        .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                         .setTextureState(new RenderStateShard.TextureStateShard(location, false, false))
                         .setTexturingState(new RenderStateShard.OffsetTexturingStateShard(u, v))
                         .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)

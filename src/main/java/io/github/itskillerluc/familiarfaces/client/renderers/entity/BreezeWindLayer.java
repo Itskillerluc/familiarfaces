@@ -5,8 +5,10 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.itskillerluc.familiarfaces.FamiliarFaces;
 import io.github.itskillerluc.familiarfaces.client.models.entity.BreezeModel;
 import io.github.itskillerluc.familiarfaces.server.entities.Breeze;
+import io.github.itskillerluc.familiarfaces.server.entities.BreezeWindCharge;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -37,7 +39,8 @@ public class BreezeWindLayer extends RenderLayer<Breeze, BreezeModel<Breeze>> {
             float headPitch
     ) {
         float f = (float)livingEntity.tickCount + partialTick;
-        VertexConsumer vertexconsumer = bufferSource.getBuffer(WindChargeRenderer.breezeWind(TEXTURE_LOCATION, this.xOffset(f) % 1.0F, 0.0F));
+        //, this.xOffset(f) % 1.0F, 0.0F
+        VertexConsumer vertexconsumer = bufferSource.getBuffer(WindChargeRenderer.breeze(TEXTURE_LOCATION, this.xOffset(f) % 1.0F, 0.0F));
         this.model.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         BreezeRenderer.enable(this.model, this.model.wind()).renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
     }
